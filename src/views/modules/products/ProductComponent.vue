@@ -1,40 +1,32 @@
 <template>
     <v-app>
-        <v-container fluid>
-           <v-row>
-                <v-col cols="3">
-                    <v-autocomplete outlined dense label="Item Name" :items="items"></v-autocomplete>
-                </v-col>
-                <v-col cols="2">
-                    <v-autocomplete outlined dense label="UOM" :items="unit_of_measures"></v-autocomplete>
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-col class="text-right">
-                    <v-btn large color="success">Export</v-btn>
-                </v-col>
-           </v-row>
-           <v-row>
-            <v-col cols="3" class="text-left">
-                <v-btn large color="primary" @click="showAddEditDialog()"><v-icon>mdi-plus</v-icon>Add</v-btn>
+        <v-row>
+            <v-col class="text-left" cols="3">
+                <v-card
+                class="mx-auto"
+                tile
+              >
+              <v-list dense>
+                <v-subheader>REPORTS</v-subheader>
+                <v-list-item-group
+                  v-model="selectedItem"
+                  color="primary"
+                >
+                  <v-list-item
+                    v-for="(item, i) in items"
+                    :key="i"
+                    @click="testing(item.value)"
+                  >
+                    <v-list-item-content>
+                      <v-list-item-title v-text="item.text"></v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+              </v-card>
             </v-col>
-            <v-spacer></v-spacer>
-                <v-col cols="3" class="text-right">
-                    <v-text-field dense label="Search"></v-text-field>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-data-table outlined :headers="headers" :items="table_items">
-                        <template v-slot:item.action="{ item }">
-                            <v-btn text icon color="orange"><v-icon small>mdi-eye</v-icon></v-btn>
-                            <v-btn text icon color="primary" @click="showAddEditDialog()"><v-icon small>mdi-pencil</v-icon></v-btn>
-                            <v-btn text icon color="red" @click="cancelItem()"><v-icon small>mdi-cancel</v-icon></v-btn>
-                          </template>
-                    </v-data-table>
-                </v-col>
-            </v-row>
-        </v-container>
-        <AddProductsDialogVue :addDialog="addDialog" @closeDialog="closeDialog()"></AddProductsDialogVue>
+        </v-row>
+  
     </v-app>
   
 </template>
@@ -141,6 +133,9 @@ export default {
     },
 
     methods: {
+        testing(id){
+            alert('Hello'+id)
+        },
         closeDialog(){
             this.addDialog = false
         },
