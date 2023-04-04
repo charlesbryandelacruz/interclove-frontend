@@ -1,6 +1,6 @@
 <template>
     <div> 
-        <v-dialog v-model="showDialog" persistent height="500px" max-width="50%">
+        <v-dialog v-model="showDialog" persistent height="500px" max-width="50%" scrollable>
             <v-card>
                 <v-card-title>
                     <v-row>
@@ -15,42 +15,26 @@
                 <v-divider horizontal></v-divider>
                 <v-card-text>
                     <v-row class="mt-2">
-                        <v-col>
-                            <v-text-field dense outlined label="SKU"></v-text-field>
+                        <v-col cols="4">
+                            <v-text-field v-model="items.sku" dense outlined hide-details label="SKU #"> </v-text-field>
                         </v-col>
-                        <v-col>
-                            <v-text-field dense outlined label="Item Name"></v-text-field>
+                        <v-col cols="4">
+                            <v-text-field v-model="items.name" dense outlined hide-details label="Item Name"> </v-text-field>
                         </v-col>
-                        <v-col>
-                            <v-autocomplete :items="unit_of_measures" dense outlined label="UOM"></v-autocomplete>
+                        <v-col cols="4">
+                            <v-autocomplete v-model="items.uom" dense outlined hide-details label="UOM" :items="unit_of_measures"> </v-autocomplete>
                         </v-col>
-                        <v-col>
-                            <v-text-field dense outlined label="SKU"></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="3">
-                            <v-textarea dense rows="2" outlined label="Description">
-                            </v-textarea>
-                        </v-col>
-                        <v-col cols="3">
-                            <v-text-field dense outlined label="SI Price" type="number"></v-text-field>
-                        </v-col>
-                        <v-col cols="3">
-                            <v-text-field dense outlined label="DR Price" type="number"></v-text-field>
-                        </v-col>
-                        <v-col cols="3">
-                            <v-text-field dense outlined label="SP Price" type="number"></v-text-field>
+                        <v-col cols="8">
+                            <v-textarea v-model="items.description" dense outlined hide-details label="Description"> </v-textarea>
                         </v-col>
                     </v-row>
                 </v-card-text>   
+                <v-divider></v-divider>
                 <v-card-actions>
                     <v-row> 
-                        <v-col class="text-center">
-                            <v-btn color="secondary">Cancel</v-btn>
-                        </v-col>
-                        <v-col class="text-center">
-                            <v-btn color="primary">Submit</v-btn>
+                        <v-col class="text-right">
+                            <v-btn small color="secondary" class="mr-2">Cancel</v-btn>
+                            <v-btn small color="primary" @click="saveItem()">Submit</v-btn>
                         </v-col>
                     </v-row>
                 </v-card-actions>  
@@ -60,6 +44,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2'
 export default {
     name: 'PosLaravelVueAddProductsDialog',
 
@@ -67,18 +53,24 @@ export default {
         return {
             showDialog:false,
             unit_of_measures:[
-                {text:'PCS',value:1},
-                {text:'M',value:2},
-                {text:'SET',value:3},
-                {text:'BOX',value:4},
-                {text:'KG',value:5},
-                {text:'ROLLS',value:6},
-            ]
+                {text:'PCS',value:'PCS'},
+                {text:'M',value:'M'},
+                {text:'SET',value:'SET'},
+                {text:'BOX',value:'BOX'},
+                {text:'KG',value:'KG'},
+                {text:'ROLLS',value:'ROLLS'},
+            ],
+            items:{
+                sku:'',
+                name:'',
+                uom:'',
+                description:''
+            }
         };
     },
     props:['addDialog'],
     mounted() {
-        
+
     },
     watch:{
         addDialog:{
@@ -88,7 +80,15 @@ export default {
         }
     },
     methods: {
-        
+        saveItem(){
+            let payload = {
+                items:this.items      
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-item`,payload).then(response=>{
+                Swal.fire(response.data,'','success')
+                $emit('refreshData')
+            })
+        }
     },
 };
 </script>

@@ -8,7 +8,6 @@
       :mini-variant.sync="mini"
       permanent
       app
-      expand-on-hover
     >
         <v-divider></v-divider>
         <v-list-item class="">
@@ -68,10 +67,51 @@ export default {
       drawer: true,
       items: [
         {
-          action: 'mdi-ticket',
-          items: [{ title: 'Products Lists',link:'/products' }],
-          title: 'Products',
+          action: 'mdi-cash-register',
+          items: [
+            { title: 'List of Invoices',link:'/products' },
+            { title: 'List of Collection',link:'/products' },
+          ],
+          title: 'Receivables',
         },
+        {
+          action: 'mdi-cash-multiple',
+          items: [
+            { title: 'List of Purchases',link:'/products' },
+            { title: 'List of Payments',link:'/products' },
+            { title: 'Expenses',link:'/products' },
+          ],
+          title: 'Payables',
+        },
+        {
+          action: 'mdi-warehouse',
+          items: [
+            { title: 'List of Products',link:'/products' },
+            { title: 'Price List',link:'/products' },
+            { title: 'Invetory Adjustment',link:'/products' },
+            { title: 'Inventory Tracking',link:'/products' }
+          ],
+          title: 'Inventory',
+        },
+        {
+          action: 'mdi-account-switch',
+          items: [
+            { title: 'List of Customers',link:'/products' },
+            { title: 'List of Supploers',link:'/products' },
+            { title: 'List of Agents/Salesman',link:'/products' },
+            { title: 'List of Employees',link:'/products' },
+          ],
+          title: 'Partners',
+        },
+        {
+          action: 'mdi-cog',
+          items: [
+            { title: 'Users',link:'/products' },
+            { title: 'Company Info',link:'/products' },
+          ],
+          title: 'System',
+        },
+        
       ],
         mini: true,
     };

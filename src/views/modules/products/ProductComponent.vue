@@ -3,30 +3,64 @@
         <v-row>
             <v-col class="text-left" cols="3">
                 <v-card
-                class="mx-auto"
-                tile
-              >
-              <v-list dense>
-                <v-subheader>REPORTS</v-subheader>
-                <v-list-item-group
-                  v-model="selectedItem"
-                  color="primary"
+                    class="ma-0 pa-0"
+                    height="100%"
+                    tile
                 >
-                  <v-list-item
-                    v-for="(item, i) in items"
-                    :key="i"
-                    @click="testing(item.value)"
-                  >
-                    <v-list-item-content>
-                      <v-list-item-title v-text="item.text"></v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-              </v-card>
+                    <v-list dense>
+                        <v-subheader>ITEMS</v-subheader>
+                        <v-list-item-group
+                        color="primary"
+                        >
+                        <v-list-item
+                            v-for="(item, i) in items"
+                            :key="i"
+                            @click="selectItem(item)"
+                        >
+                            <v-list-item-content>
+                            <v-list-item-title v-text="item.name"></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-card>
+            </v-col>
+            <v-col class="text-left" cols="9" >
+                <v-card
+                    height="100%"
+                    class="m-auto"
+                >
+                    <v-card-title>
+                        <v-row>
+                            <v-col>Item Details</v-col>
+                            <v-spacer></v-spacer>
+                            <v-col class="text-right">
+                                <v-btn color="primary" @click="showAddEditDialog"><v-icon>mdi-plus</v-icon>Add</v-btn>
+                            </v-col>
+                        </v-row>
+        
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="4">
+                                <v-text-field v-model="selected_item.sku" dense outlined hide-details label="SKU #"> </v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field v-model="selected_item.name" dense outlined hide-details label="Item Name"> </v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field v-model="selected_item.uom" dense outlined hide-details label="UOM"> </v-text-field>
+                            </v-col>
+                            <v-col cols="8">
+                                <v-textarea v-model="selected_item.description" dense outlined hide-details label="Description"> </v-textarea>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
             </v-col>
         </v-row>
-  
+        <AddProductsDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddProductsDialogVue>
     </v-app>
   
 </template>
@@ -34,107 +68,31 @@
 <script>
 import Swal from 'sweetalert2';
 import AddProductsDialogVue from '../../dialog/AddProductsDialog.vue';
+import axios from 'axios';
 export default {
     name: 'PosLaravelVueProductComponent',
 
     data() {
         return {
-            items:[
-                {text:'POLYCARBONATE (100M)',value:1},
-                {text:'STAINLESS SCREW',value:2},
-                {text:'Laser Type Welding Machine',value:3},
-                {text:'Polycarbonate Shutter',value:4},
-                {text:'PLASTIC ENDCAP',value:5},
-            ],
-            headers: [
-                { text: 'Name', value: 'a' },
-                { text: 'UOM', value: 'b' },
-                { text: 'SI PRICE', value: 'c' },
-                { text: 'SI PRICE (10%)', value: 'd' },
-                { text: 'DR PRICE', value: 'e' },
-                { text: 'DR PRICE (10%)', value: 'f' },
-                { text: 'DR PRICE (15%)', value: 'g' },
-                { text: 'DR PRICE (20%)', value: 'h' },
-                { text: 'SP PRICE 1', value: 'i' },
-                { text: 'SP PRICE 2', value: 'j' },
-                { text: 'Action', value: 'action' },
-            ],
-            unit_of_measures:[
-                {text:'PCS',value:1},
-                {text:'M',value:2},
-                {text:'SET',value:3},
-                {text:'BOX',value:4},
-                {text:'KG',value:5},
-                {text:'ROLLS',value:6},
-            ],
-            table_items:[
-                { a: 'Laser Type Welding Machin', 
-                    b: 159,
-                    c: 6.0,
-                    d: 24, 
-                    e: 4.0, 
-                    f: '1%',
-                    g: 4.0, 
-                    h: '1%',
-                    i: 4.0, 
-                    j: '1%',
-                },
-                { a: 'ALUMINUM CONNECTOR (6.0M)', 
-                    b: 159,
-                    c: 6.0,
-                    d: 24, 
-                    e: 4.0, 
-                    f: '1%',
-                    g: 4.0, 
-                    h: '1%',
-                    i: 4.0, 
-                    j: '1%',
-                },
-                { a: 'RUBBER STRIP (1M)', 
-                    b: 159,
-                    c: 6.0,
-                    d: 24, 
-                    e: 4.0, 
-                    f: '1%',
-                    g: 4.0, 
-                    h: '1%',
-                    i: 4.0, 
-                    j: '1%',
-                },
-                { a: 'SPRING', 
-                    b: 159,
-                    c: 6.0,
-                    d: 24, 
-                    e: 4.0, 
-                    f: '1%',
-                    g: 4.0, 
-                    h: '1%',
-                    i: 4.0, 
-                    j: '1%',
-                },
-                { a: 'WINDING WHEEL', 
-                    b: 159,
-                    c: 6.0,
-                    d: 24, 
-                    e: 4.0, 
-                    f: '1%',
-                    g: 4.0, 
-                    h: '1%',
-                    i: 4.0, 
-                    j: '1%',
-                },
-            ],
-            addDialog:false
+            addDialog:false,
+            items:[],
+            addDialog:false,
+            selected_item:{
+                sku:'',
+                name:'',
+                uom:'',
+                description:''
+            }
         };
     },
 
     mounted() {
-        
+        this.getAll();
     },
 
     methods: {
-        testing(id){
-            alert('Hello'+id)
+        selectItem(item){
+            this.selected_item = item
         },
         closeDialog(){
             this.addDialog = false
@@ -160,6 +118,12 @@ export default {
             .catch((error) => {
                 console.error('An error occurred:', error);
             });
+        },
+        getAll(){
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
+                this.items = response.data
+            })
+           
         }
     },
     components:{

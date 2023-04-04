@@ -52,7 +52,7 @@ export default {
                email:'charles@gmail.com',
                password:this.password,         
          }
-         axios.post('http://localhost:8000/login',payload).then(response=>{
+         axios.post(`${process.env.VUE_APP_HOST_API}/login`,payload).then(response=>{
                Swal.fire(response.data,'','success')
                this.$router.push('/home')
          })
