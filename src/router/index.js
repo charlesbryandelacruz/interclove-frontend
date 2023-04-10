@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import Login from '../views/main/Login.vue'
 import Products from '../views/modules/products/ProductComponent.vue'
 import HelloWorld from '../components/HelloWorld.vue'
+import PriceListComponent from '../views/modules/products/PriceListComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -21,6 +22,11 @@ const routes = [
     path: '/products',
     name: 'products',
     component: Products
+  },
+  {
+    path: '/price-list',
+    name: 'price-list',
+    component: PriceListComponent
   },
 ]
 
