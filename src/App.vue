@@ -80,17 +80,17 @@ export default {
         {
           action: 'mdi-cash-register',
           items: [
-            { title: 'List of Invoices',link:'/products' },
-            { title: 'List of Collection',link:'/products' },
+            { title: 'List of Invoices',link:'/' },
+            { title: 'List of Collection',link:'/' },
           ],
           title: 'Receivables',
         },
         {
           action: 'mdi-cash-multiple',
           items: [
-            { title: 'List of Purchases',link:'/products' },
-            { title: 'List of Payments',link:'/products' },
-            { title: 'Expenses',link:'/products' },
+            { title: 'List of Purchases',link:'/' },
+            { title: 'List of Payments',link:'/' },
+            { title: 'Expenses',link:'/' },
           ],
           title: 'Payables',
         },
@@ -99,26 +99,26 @@ export default {
           items: [
             { title: 'List of Products',link:'/products' },
             { title: 'Price List',link:'/price-list' },
-            { title: 'Invetory Adjustment',link:'/products' },
-            { title: 'Inventory Tracking',link:'/products' }
+            { title: 'Invetory Adjustment',link:'/' },
+            { title: 'Inventory Tracking',link:'/' }
           ],
           title: 'Inventory',
         },
         {
           action: 'mdi-account-switch',
           items: [
-            { title: 'List of Customers',link:'/products' },
-            { title: 'List of Supploers',link:'/products' },
-            { title: 'List of Agents/Salesman',link:'/products' },
-            { title: 'List of Employees',link:'/products' },
+            { title: 'List of Customers',link:'/customers' },
+            { title: 'List of Suppliers',link:'/suppliers' },
+            { title: 'List of Agents/Salesman',link:'/' },
+            { title: 'List of Employees',link:'/' },
           ],
           title: 'Partners',
         },
         {
           action: 'mdi-cog',
           items: [
-            { title: 'Users',link:'/products' },
-            { title: 'Company Info',link:'/products' },
+            { title: 'Users',link:'/' },
+            { title: 'Company Info',link:'/' },
           ],
           title: 'System',
         },

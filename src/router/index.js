@@ -5,6 +5,8 @@ import Login from '../views/main/Login.vue'
 import Products from '../views/modules/products/ProductComponent.vue'
 import HelloWorld from '../components/HelloWorld.vue'
 import PriceListComponent from '../views/modules/products/PriceListComponent.vue'
+import CustomerComponent from '../views/modules/partners/CustomerComponent.vue'
+import SupplierComponent from '../views/modules/partners/SupplierComponen.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -27,6 +29,16 @@ const routes = [
     path: '/price-list',
     name: 'price-list',
     component: PriceListComponent
+  },
+  {
+    path: '/customers',
+    name: 'customers',
+    component: CustomerComponent
+  },
+  {
+    path: '/suppliers',
+    name: 'suppliers',
+    component: SupplierComponent
   },
 ]
 
