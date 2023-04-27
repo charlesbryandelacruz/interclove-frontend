@@ -1,9 +1,10 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar app dense>
+    <v-app-bar app dense v-if="$router.currentRoute.name != 'login'">
       <router-link to="/home">Home</router-link>
     </v-app-bar>
     <v-navigation-drawer
+      v-if="$router.currentRoute.name != 'login'"
       color="#E0E0E0"
       v-model="drawer"
       :mini-variant.sync="mini"
@@ -80,8 +81,10 @@ export default {
         {
           action: 'mdi-cash-register',
           items: [
-            { title: 'List of Invoices',link:'/' },
-            { title: 'List of Collection',link:'/' },
+            { title: 'List of Invoices',link:'/invoice-list' },
+            { title: 'Add Invoice',link:'/add-invoice' },
+            { title: 'List of Collection',link:'/collection-list' },
+            { title: 'Add Collection',link:'/add-collection' },
           ],
           title: 'Receivables',
         },
@@ -109,7 +112,7 @@ export default {
           items: [
             { title: 'List of Customers',link:'/customers' },
             { title: 'List of Suppliers',link:'/suppliers' },
-            { title: 'List of Agents/Salesman',link:'/' },
+            { title: 'List of Agents/Salesman',link:'/salesmans' },
             { title: 'List of Employees',link:'/' },
           ],
           title: 'Partners',
@@ -117,7 +120,7 @@ export default {
         {
           action: 'mdi-cog',
           items: [
-            { title: 'Users',link:'/' },
+            { title: 'Users',link:'/users-list' },
             { title: 'Company Info',link:'/' },
           ],
           title: 'System',
@@ -126,6 +129,9 @@ export default {
       ],
         mini: true,
     };
+  },
+  mounted(){
+    console.log(this.$router)
   },
   methods: {
     openGithub() {

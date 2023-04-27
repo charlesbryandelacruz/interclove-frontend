@@ -241,7 +241,7 @@ export default {
                 let payload = {
                     items:this.selected_item
                 }
-                axios.post(`${process.env.VUE_APP_HOST_API}/api/update-item`,payload).then(response=>{
+                axios.post(`${process.env.VUE_APP_HOST_API}/api/update-pricing`,payload).then(response=>{
                     Swal.fire(response.data,'','success')
                     this.getAll();
                 })

@@ -6,7 +6,13 @@ import Products from '../views/modules/products/ProductComponent.vue'
 import HelloWorld from '../components/HelloWorld.vue'
 import PriceListComponent from '../views/modules/products/PriceListComponent.vue'
 import CustomerComponent from '../views/modules/partners/CustomerComponent.vue'
-import SupplierComponent from '../views/modules/partners/SupplierComponen.vue'
+import SupplierComponent from '../views/modules/partners/SupplierComponent.vue'
+import SalesmanComponent from '../views/modules/partners/SalesmanComponent.vue'
+import AddInvoiceDialog from '../views/dialog/AddInvoiceDialog.vue'
+import InvoiceListComponent from '../views/modules/receivables/InvoiceListComponent.vue'
+import UserListComponent from '../views/modules/system/UserListComponent.vue'
+import CollectionListComponent from '../views/modules/receivables/CollectionListComponent.vue'
+import AddCollectionDialog from '../views/dialog/AddCollectionDialog.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -39,6 +45,38 @@ const routes = [
     path: '/suppliers',
     name: 'suppliers',
     component: SupplierComponent
+  },
+  {
+    path: '/add-invoice',
+    name: 'add-invoice',
+    component: AddInvoiceDialog,
+    props: { dialog: true }
+  },
+  {
+    path: '/invoice-list',
+    name: 'invoice-list',
+    component: InvoiceListComponent,
+  },
+  {
+    path: '/users-list',
+    name: 'users-list',
+    component: UserListComponent,
+  },
+  {
+    path: '/salesmans',
+    name: 'salesmans',
+    component: SalesmanComponent,
+  },
+  {
+    path: '/collection-list',
+    name: 'collection-list',
+    component: CollectionListComponent,
+  },
+  {
+    path: '/add-collection',
+    name: 'add-collection',
+    component: AddCollectionDialog,
+    props: { dialog: true }
   },
 ]
 

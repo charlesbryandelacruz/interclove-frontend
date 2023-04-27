@@ -5,6 +5,7 @@ import router from './router'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import  Vue2Filters from 'vue2-filters'
+import moment from 'moment/moment'
 Vue.use(vuetify);
 Vue.use(Vue2Filters);
 new Vue({
@@ -12,5 +13,6 @@ new Vue({
   axios,
   Swal,
   vuetify,
+  moment,
   render: function (h) { return h(App) }
 }).$mount('#app')
