@@ -58,15 +58,26 @@
                     <v-btn icon small color="primary" @click="addLine()"><v-icon>mdi-plus</v-icon></v-btn> 
                 </h3>   
                 <v-divider class="mb-2"></v-divider>
+                <v-row>
+                    <v-col class="text-center">
+                        <h3>Name</h3>
+                    </v-col>
+                    <v-col class="text-center" >
+                        <h3>Position</h3>
+                    </v-col>
+                    <v-col class="text-center" >
+                        <h3>Contact</h3>
+                    </v-col>
+                </v-row>
                 <v-row v-for="(customer,i) in customers.contacts" :key="i" class="ma-1 pa-0">
                     <v-col class="pa-0 ma-0">
-                        <v-text-field class="px-1" v-model="customer.contact_person" dense outlined hide-details label="Name"> </v-text-field>
+                        <v-text-field class="px-1" v-model="customer.contact_person" dense outlined hide-details> </v-text-field>
                     </v-col>
                     <v-col class="pa-0 ma-0">
-                        <v-text-field class="px-1" v-model="customer.contact_position" dense outlined hide-details label="Position"> </v-text-field>
+                        <v-text-field class="px-1" v-model="customer.contact_position" dense outlined hide-details> </v-text-field>
                     </v-col>
                     <v-col class="pa-0 ma-0">
-                        <v-text-field class="px-1" v-model="customer.contact_number" dense outlined hide-details label="Contact"> </v-text-field>
+                        <v-text-field class="px-1" v-model="customer.contact_number" dense outlined hide-details> </v-text-field>
                     </v-col>
                 </v-row> 
                 <v-divider class="mt-2"></v-divider>             
@@ -126,6 +137,7 @@ methods: {
             Swal.fire(response.data,'','success')
             this.$emit('refreshData')
             this.$emit('closeDialog')
+            this.resetFields();
         })
     },
     addLine(){
@@ -137,6 +149,9 @@ methods: {
     },
     removeLine(){
         this.customers.contacts.pop()
+    },
+    resetFields(){
+        Object.assign(this.$data, this.$options.data.call(this));
     }
 
 },

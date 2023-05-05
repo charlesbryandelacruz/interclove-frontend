@@ -13,6 +13,8 @@ import InvoiceListComponent from '../views/modules/receivables/InvoiceListCompon
 import UserListComponent from '../views/modules/system/UserListComponent.vue'
 import CollectionListComponent from '../views/modules/receivables/CollectionListComponent.vue'
 import AddCollectionDialog from '../views/dialog/AddCollectionDialog.vue'
+import PettyCashComponent from '../views/modules/payables/PettyCashComponent.vue'
+import QuotationListComponent from '../views/modules/receivables/QuotationListComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -76,6 +78,18 @@ const routes = [
     path: '/add-collection',
     name: 'add-collection',
     component: AddCollectionDialog,
+    props: { dialog: true }
+  },
+  {
+    path: '/petty-cash',
+    name: 'petty-cash',
+    component: PettyCashComponent,
+    props: { dialog: true }
+  },
+  {
+    path: '/quotation-list',
+    name: 'quotation-list',
+    component: QuotationListComponent,
     props: { dialog: true }
   },
 ]

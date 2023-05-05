@@ -81,6 +81,7 @@ export default {
         {
           action: 'mdi-cash-register',
           items: [
+            { title: 'List of Quotation',link:'/quotation-list' },
             { title: 'List of Invoices',link:'/invoice-list' },
             { title: 'Add Invoice',link:'/add-invoice' },
             { title: 'List of Collection',link:'/collection-list' },
@@ -94,6 +95,7 @@ export default {
             { title: 'List of Purchases',link:'/' },
             { title: 'List of Payments',link:'/' },
             { title: 'Expenses',link:'/' },
+            { title: 'Petty Cash',link:'/petty-cash' },
           ],
           title: 'Payables',
         },

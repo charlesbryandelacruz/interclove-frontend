@@ -28,6 +28,17 @@
                             <v-btn  icon small color="primary" @click="addLine('p')"><v-icon>mdi-plus</v-icon></v-btn> 
                         </h3>  
                         <v-divider class="mb-2"></v-divider>
+                        <v-row>
+                            <v-col class="text-center">
+                                <h3>Product</h3>
+                            </v-col>
+                            <v-col class="text-center" >
+                                <h3>Payment Type</h3>
+                            </v-col>
+                            <v-col class="text-center" >
+                                <h3>Terms</h3>
+                            </v-col>
+                        </v-row>
                         <v-row v-for="(supplier,i) in suppliers.supplier_products" :key="i" class="ma-1 pa-0">
                             <v-col class="pa-0 ma-0">
                                 <v-autocomplete 
@@ -36,11 +47,10 @@
                                     dense 
                                     outlined 
                                     hide-details 
-                                    label="Product" 
+                                    placeholder="Product" 
                                     item-text="name"
                                     item-value="id"
                                     :items="product_selection"
-                                     
                                 > 
                                 </v-autocomplete>
                             </v-col>
@@ -51,16 +61,15 @@
                                     dense 
                                     outlined 
                                     hide-details 
-                                    label="Payment Type" 
+                                    placeholder="Payment Type" 
                                     item-text="name"
                                     item-value="id"
                                     :items="payment_type_selection"
-                                     
                                     > 
                                 </v-autocomplete>
                             </v-col>
                             <v-col class="pa-0 ma-0">
-                                <v-text-field  class="px-1"  v-model="supplier.terms" dense outlined hide-details label="Terms"> </v-text-field>
+                                <v-text-field  class="px-1"  v-model="supplier.terms" dense outlined hide-details placeholder="Terms"> </v-text-field>
                             </v-col>
                         </v-row> 
                         <h3 class="mt-4">Contacts  
@@ -68,15 +77,26 @@
                             <v-btn  icon small color="primary" @click="addLine('c')"><v-icon>mdi-plus</v-icon></v-btn> 
                         </h3>   
                         <v-divider class="mb-2"></v-divider>
+                        <v-row>
+                            <v-col class="text-center">
+                                <h3>Name</h3>
+                            </v-col>
+                            <v-col class="text-center" >
+                                <h3>Position</h3>
+                            </v-col>
+                            <v-col class="text-center" >
+                                <h3>Contact</h3>
+                            </v-col>
+                        </v-row>
                         <v-row v-for="(supplier,i) in suppliers.contacts" :key="i" class="ma-1 pa-0">
                             <v-col class="pa-0 ma-0">
-                                <v-text-field class="px-1"  v-model="supplier.contact_person" dense outlined hide-details label="Name"> </v-text-field>
+                                <v-text-field class="px-1"  placeholder="Name" v-model="supplier.contact_person" dense outlined hide-details> </v-text-field>
                             </v-col>
                             <v-col class="pa-0 ma-0">
-                                <v-text-field class="px-1"  v-model="supplier.contact_position" dense outlined hide-details label="Position"> </v-text-field>
+                                <v-text-field class="px-1"  placeholder="Position" v-model="supplier.contact_position" dense outlined hide-details> </v-text-field>
                             </v-col>
                             <v-col class="pa-0 ma-0">
-                                <v-text-field class="px-1"  v-model="supplier.contact_number" dense outlined hide-details label="Contact"> </v-text-field>
+                                <v-text-field class="px-1"  placeholder="Contact" v-model="supplier.contact_number" dense outlined hide-details> </v-text-field>
                             </v-col>
                         </v-row> 
                 <v-divider class="mt-2"></v-divider>             
@@ -140,6 +160,7 @@ methods: {
             Swal.fire(response.data,'','success')
             this.$emit('refreshData')
             this.$emit('closeDialog')
+            this.resetFields()
         })
     },
     addLine(type){
@@ -163,6 +184,9 @@ methods: {
         else if(type == 'p') this.suppliers.supplier_products.pop()
         
     },
+    resetFields(){
+        Object.assign(this.$data, this.$options.data.call(this));
+    }
 
 },
 };

@@ -88,15 +88,26 @@
                         <v-btn v-if="!isDisabled" icon small color="primary" @click="addLine()"><v-icon>mdi-plus</v-icon></v-btn> 
                     </h3>   
                     <v-divider class="mb-2"></v-divider>
+                    <v-row>
+                        <v-col class="text-center">
+                            <h3>Name</h3>
+                        </v-col>
+                        <v-col class="text-center" >
+                            <h3>Position</h3>
+                        </v-col>
+                        <v-col class="text-center" >
+                            <h3>Contact</h3>
+                        </v-col>
+                    </v-row>
                     <v-row v-for="(customer,i) in selected_item.contacts" :key="i" class="ma-1 pa-0">
                         <v-col class="pa-0 ma-0">
-                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_person" dense outlined hide-details label="Name"> </v-text-field>
+                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_person" dense outlined hide-details placeholder="Name"> </v-text-field>
                         </v-col>
                         <v-col class="pa-0 ma-0">
-                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_position" dense outlined hide-details label="Position"> </v-text-field>
+                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_position" dense outlined hide-details placeholder="Position"> </v-text-field>
                         </v-col>
                         <v-col class="pa-0 ma-0">
-                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_number" dense outlined hide-details label="Contact"> </v-text-field>
+                            <v-text-field class="px-1" :readonly="isDisabled" v-model="customer.contact_number" dense outlined hide-details placeholder="Contact"> </v-text-field>
                         </v-col>
                     </v-row> 
                     <h3 class="mt-4">Transactions</h3>
@@ -176,16 +187,16 @@ export default {
             pricing_selection:[],
             payment_type_selection:[],
             pricingTable:{
-            headers:[
-                { text: 'Date', value: 'transaction_date' },
-                { text: 'Type', value: 'transaction_type' },
-                { text: 'Customer/Supplier', value: 'customer_supplier' },
-                { text: 'Add/Subtract', value: 'add' },
-                { text: 'Quantity', value: 'quantity' },
-                { text: 'Total Amount', value: 'total_amount' },
-            ],
-            items:[]
-        }
+                headers:[
+                    { text: 'Date', value: 'transaction_date' },
+                    { text: 'Type', value: 'transaction_type' },
+                    { text: 'Customer/Supplier', value: 'customer_supplier' },
+                    { text: 'Add/Subtract', value: 'add' },
+                    { text: 'Quantity', value: 'quantity' },
+                    { text: 'Total Amount', value: 'total_amount' },
+                ],
+                items:[]
+            }
         };
     },
 

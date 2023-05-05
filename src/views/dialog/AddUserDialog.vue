@@ -111,13 +111,16 @@ export default {
                 Swal.fire(response.data,'','success')
                 this.$emit('refreshData')
                 this.$emit('closeDialog')
+                this.resetFields()
             })
         },
         getAllDepartments(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-departments`).then(response=>{
                 this.departments = response.data
-                console.log(this.departments)
             })
+        },
+        resetFields(){
+            Object.assign(this.$data, this.$options.data.call(this));
         }
     },
 };

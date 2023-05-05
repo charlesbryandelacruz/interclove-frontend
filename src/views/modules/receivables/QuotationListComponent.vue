@@ -5,23 +5,6 @@
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
             <v-col class="text-left px-2 mt-2" cols="9">
-                <v-card-title>
-                    <v-row>
-                        <v-col>Customer Details</v-col>
-                        <v-spacer></v-spacer>
-                        <v-col class="text-right">
-                            <v-btn 
-                                :disabled="selected_item.balance_amount == 0" 
-                                small
-                                color="primary" 
-                                @click="showAddEditDialog">
-                                    <v-icon>mdi-plus</v-icon>
-                                    Add Collection
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-    
-                </v-card-title>
                     <v-card-text>
                         <v-row>
                             <v-col cols="5">
@@ -81,7 +64,7 @@
                                         <v-text-field readonly v-model="selected_item.po_num" dense outlined hide-details label="PO #"> </v-text-field>
                                     </v-col>
                                     <v-col cols="6">
-                                        <!-- <v-text-field readonly v-model="selected_item.sales_account_id" dense outlined hide-details label="GL Sales Account"> </v-text-field> -->
+                                        <v-text-field readonly v-model="selected_item.sales_account_id" dense outlined hide-details label="GL Sales Account"> </v-text-field>
                                     </v-col>
                                 </v-row>
                             </v-col>
@@ -90,7 +73,7 @@
                                 readonly
                                 row="3"
                                 outlined
-                                label="Remarks"
+                                label="DR/S"
                                 v-model="selected_item.drs"
                                 >
                                 </v-textarea>
@@ -105,23 +88,6 @@
                                         </h5> 
                                     </v-card-title>
                                     <v-divider class="mb-2"></v-divider>
-                                    <v-row>
-                                        <v-col class="text-center">
-                                            <h3>Item</h3>
-                                        </v-col>
-                                        <v-col class="text-center" >
-                                            <h3>Quantity</h3>
-                                        </v-col>
-                                        <v-col class="text-center" >
-                                            <h3>Unit Price</h3>
-                                        </v-col>
-                                        <v-col class="text-center" >
-                                            <h3>UOM</h3>
-                                        </v-col>
-                                        <v-col class="text-center" >
-                                            <h3>Total Price</h3>    
-                                        </v-col>
-                                    </v-row>
                                     <v-row  v-for="(item,i) in selected_item.invoice_items" :key="i" class="ma-1 pa-0">
                                         <v-col class="pa-0 ma-0">
                                             <v-autocomplete 
@@ -130,6 +96,7 @@
                                                 dense 
                                                 outlined 
                                                 hide-details 
+                                                label="Item" 
                                                 :items="item_selection" 
                                                 item-text="name"
                                                 item-value="id"
@@ -137,16 +104,16 @@
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1"  v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                            <v-text-field class="mx-1"  v-model="item.quantity" dense outlined hide-details label="Quantity" type="number" @blur="computeAmount(i)"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.unit_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" v-model="item.unit_price" readonly dense outlined hide-details label="Unit Price" background-color="grey"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" v-model="item.uom" readonly dense outlined hide-details label="Unit" background-color="grey"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
+                                            <v-text-field class="mx-1" v-model="item.total_price" readonly dense outlined hide-details label="Total Price"> </v-text-field>
                                         </v-col>
                                     </v-row> 
                                 </v-col>
@@ -155,25 +122,19 @@
                         <v-row class="mt-5">
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
-                                <v-text-field 
-                                dense
-                                outlined
-                                hide-details
-                                v-model="selected_item.total_amount">
-                            </v-text-field>
-                                <!-- <h3>Total: {{selected_item.total_amount | currency('₱ ',2) }}</h3> -->
+                                <h3>Total: {{selected_item.total_amount | currency('₱ ',2) }}</h3>
                             </v-col>
                         </v-row>
                     </v-card-text>
             </v-col>
         </v-row>
-        <AddCollectionDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddCollectionDialog>
+        <!-- <AddCustomersDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddCustomersDialog> -->
     </v-app>
   
 </template>
 
 <script>
-import AddCollectionDialog from '../../dialog/AddCollectionDialog.vue';
+import AddCustomersDialog from '../../dialog/AddCustomersDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -183,6 +144,7 @@ export default {
 
     data() {
         return {
+            items:[],
             customer_selection:[],
             salesman_selection:[],
             item_selection:[],
@@ -206,14 +168,8 @@ export default {
                         total_price:0,
                     }
                 ],
-                total_amount:0,
-                balance_amount:0,
-                paid_amount:0,
-                id:0,
-                size:'',
-            },
-            addDialog:false,
-            items:[]
+                total_amount:0
+            }   
         };
     },
 
@@ -270,15 +226,19 @@ export default {
         },
         getAll(){
             let payload = {
-                is_quotation:0
+                is_quotation:1,
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-invoices`,payload).then(response=>{
+                response.data.forEach(e=>{
+                    e.name = e.q_name
+                })
                 this.items = response.data
             })
         },
+        
     },
     components:{
-        AddCollectionDialog,
+        AddCustomersDialog,
         ListComponentVue
     },
 };

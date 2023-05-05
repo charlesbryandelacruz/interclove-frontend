@@ -23,6 +23,9 @@
                         <v-col cols="4">
                             <v-autocomplete v-model="items.uom" dense outlined hide-details label="UOM" :items="unit_of_measures"> </v-autocomplete>
                         </v-col>
+                        <v-col cols="4">
+                            <v-autocomplete v-model="items.size" dense outlined hide-details label="Item Size" :items="item_sizes"> </v-autocomplete>
+                        </v-col>
                         <v-col cols="8">
                             <v-textarea v-model="items.description" dense outlined hide-details label="Description"> </v-textarea>
                         </v-col>
@@ -35,8 +38,6 @@
                         </v-col>
                     </v-row>
                 </v-card-text>   
-               
-          
             </v-card>
         </v-dialog>
 </template>
@@ -62,8 +63,14 @@ export default {
                 sku:'',
                 name:'',
                 uom:'',
-                description:''
-            }
+                description:'',
+                size:'',
+            },
+            item_sizes:[
+                {text:'SMALL',value:'SMALL'},
+                {text:'MEDIUM',value:'MEDIUM'},
+                {text:'LARGE',value:'LARGE'},
+            ],
         };
     },
     props:['addDialog'],
@@ -86,7 +93,11 @@ export default {
                 Swal.fire(response.data,'','success')
                 this.$emit('refreshData')
                 this.$emit('closeDialog')
+                this.resetFields()
             })
+        },
+        resetFields(){
+            Object.assign(this.$data, this.$options.data.call(this));
         }
     },
 };

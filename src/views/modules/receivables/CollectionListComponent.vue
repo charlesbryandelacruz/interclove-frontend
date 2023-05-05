@@ -61,7 +61,7 @@
                                 </v-row>
                                 <v-row>
                                     <v-col cols="6">
-                                        <v-text-field readonly v-model="selected_item.po_num" dense outlined hide-details label="PO #"> </v-text-field>
+                                        <!-- <v-text-field readonly v-model="selected_item.po_num" dense outlined hide-details label="PO #"> </v-text-field> -->
                                     </v-col>
                                     <v-col cols="6">
                                         <v-text-field readonly v-model="selected_item.sales_account_id" dense outlined hide-details label="GL Sales Account"> </v-text-field>
@@ -73,8 +73,8 @@
                                 readonly
                                 row="3"
                                 outlined
-                                label="DR/S"
-                                v-model="selected_item.drs"
+                                label="Remarks"
+                                v-model="selected_item.remarks"
                                 >
                                 </v-textarea>
                             </v-col>
@@ -157,7 +157,7 @@ export default {
                 terms:'',
                 salesman_id:0,
                 sales_account_id:0,
-                drs:'',
+                remarks:'',
                 invoice_items:[
                     {
                         item_id:0,

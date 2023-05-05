@@ -7,7 +7,7 @@
             <v-col class="text-left px-2 mt-2" cols="9">
                     <v-card-title>
                         <v-row>
-                            <v-col>Item Details</v-col>
+                            <v-col>Petty Cash Details</v-col>
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
@@ -41,71 +41,79 @@
         
                     </v-card-title>
                     <v-divider></v-divider>
+                    
                     <v-card-text >
-                        <v-row>
-                            <v-col cols="4">
-                                <v-text-field 
-                                    :readonly="isDisabled" 
-                                    v-model="selected_item.sku" 
-                                    dense 
-                                    outlined 
-                                    hide-details 
-                                    label="SKU #"> 
-                                </v-text-field>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-text-field 
-                                    :readonly="isDisabled" 
-                                    v-model="selected_item.name" 
-                                    dense 
-                                    outlined 
-                                    hide-details 
-                                    label="Item Name"> 
-                                </v-text-field>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-autocomplete   :readonly="isDisabled"  v-model="selected_item.uom" dense outlined hide-details label="UOM" :items="unit_of_measures"> </v-autocomplete>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-autocomplete   :readonly="isDisabled"  v-model="selected_item.size" dense outlined hide-details label="Item Size" :items="item_sizes"> </v-autocomplete>
-                            </v-col>
-                            <v-col cols="8">
-                                <v-textarea 
-                                    :readonly="isDisabled" 
-                                    v-model="selected_item.description" 
-                                    dense 
-                                    outlined 
-                                    hide-details 
-                                    label="Description"> 
-                                </v-textarea>
-                            </v-col>
-                        </v-row>
-                        <h3 class="mt-4">Other Details</h3>
+                        <h3 class="mt-2">Details</h3>
                         <v-divider class="mb-2"></v-divider>
                         <v-row>
-                            <v-col cols="2">
+                            <v-col cols="4">
                                 <v-text-field 
-                                outlined
-                                dense
-                                hide-details
-                                label="Current Stocks"
-                                readonly>
-
+                                    :readonly="isDisabled" 
+                                    v-model="selected_item.title" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Title"> 
                                 </v-text-field>
                             </v-col>
-                            <v-col cols="2">
-                                <v-text-field
-                                v-model="selected_item.item_prices.total_cost" 
-                                outlined
-                                dense
-                                hide-details
-                                label="Price Bought"
-                                readonly>
-
+                            <v-col cols="4">
+                                <v-text-field 
+                                    :readonly="isDisabled" 
+                                    v-model="selected_item.remaining_amount" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Remaining"> 
+                                </v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field 
+                                    :readonly="isDisabled" 
+                                    v-model="selected_item.gross_amount" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Total Amount"> 
                                 </v-text-field>
                             </v-col>
                         </v-row>
-                    
+                        <h3 class="mt-4">Transactions</h3>
+                    <v-divider class="mb-2"></v-divider>
+                    <v-row>
+                        <v-col>
+                            <v-data-table 
+                                dense
+                                :headers="transaction.headers"
+                                :items="transaction.items"
+                                >
+                                <template v-slot:[`item.si_price`]="{ item }">
+                                    {{ item.si_price | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.si_price_1`]="{ item }">
+                                    {{ item.si_price - (item.si_price * .10) | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.si_price_2`]="{ item }">
+                                    {{( item.si_price - item.si_price * .15) | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.si_price_3`]="{ item }">
+                                    {{ item.si_price - (item.si_price * .20) | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.dr_price`]="{ item }">
+                                    {{ item.dr_price | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.dr_price_1`]="{ item }">
+                                    {{ item.dr_price - (item.dr_price * .10) | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.dr_price_2`]="{ item }">
+                                    {{( item.dr_price - item.dr_price * .15) | currency('₱ ',2) }}
+                                </template>
+                                <template v-slot:[`item.dr_price_3`]="{ item }">
+                                    {{ item.dr_price - (item.dr_price * .20) | currency('₱ ',2) }}
+                                </template>
+                            </v-data-table>
+                        </v-col>
+                      
+                    </v-row>
                     </v-card-text>
             </v-col>
         </v-row>
@@ -126,29 +134,22 @@ export default {
         return {
             addDialog:false,
             items:[],
-            addDialog:false,
             selected_item:{
-                sku:'',
-                name:'',
-                uom:'',
-                description:'',
-                id:'',
-                item_prices:[]
+                title:'',
+                gross_amount:0,
+                remaining_amount:0,
+                id:''
             },
             isDisabled:true,
-            unit_of_measures:[
-                {text:'PCS',value:'PCS'},
-                {text:'M',value:'M'},
-                {text:'SET',value:'SET'},
-                {text:'BOX',value:'BOX'},
-                {text:'KG',value:'KG'},
-                {text:'ROLLS',value:'ROLLS'},
-            ],
-            item_sizes:[
-                {text:'SMALL',value:'PCS'},
-                {text:'LARGE',value:'M'},
-                {text:'MEDIUM',value:'SET'},
-            ],
+            transaction:{
+                headers:[
+                    { text: 'Date', value: 'created_at' },
+                    { text: 'Type', value: 'expense_type_by_name' },
+                    { text: 'Description', value: 'description' },
+                    { text: 'Amount', value: 'allocated_amount' },
+                ],
+                items:[]
+            }
         };
     },
 
@@ -186,7 +187,7 @@ export default {
             });
         },
         getAll(){
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-petty-cash`).then(response=>{
                 this.items = response.data
             })
         },

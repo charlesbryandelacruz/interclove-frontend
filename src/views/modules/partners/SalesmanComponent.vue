@@ -40,8 +40,10 @@
                         </v-row>
         
                     </v-card-title>
-                    <v-divider></v-divider>
+                    <v-divider></v-divider>  
                     <v-card-text >
+                        <h3 class="mt-2">Details</h3>
+                        <v-divider class="mb-2"></v-divider>
                         <v-row>
                             <v-col cols="6">
                                 <v-text-field 
@@ -64,6 +66,20 @@
                                 </v-text-field>
                             </v-col>
                         </v-row>
+                        <h3 class="mt-4">Transactions</h3>
+                    <v-divider class="mb-2"></v-divider>
+                    <v-row>
+                        <v-col>
+                            <v-data-table 
+                                dense
+                                :headers="pricingTable.headers"
+                                :items="selected_item.salesman_transactions"
+                                >
+                                
+                            </v-data-table>
+                        </v-col>
+                      
+                    </v-row>
                     </v-card-text>
             </v-col>
         </v-row>
@@ -87,9 +103,20 @@ export default {
             selected_item:{
                 name:'',
                 remarks:'',
-                id:''
+                id:'',
+                salesman_transactions:[]
             },
             isDisabled:true,
+            pricingTable:{
+                headers:[
+                    { text: 'Date', value: 'invoice_date' },
+                    { text: 'Type', value: 'invoice_date' },
+                    { text: 'Customer/Supplier', value: 'customer.company_name' },
+                    { text: 'Invoice Number', value: 'invoice_num' },
+                    { text: 'Total Amount', value: 'total_amount' },
+                ],
+                items:[]
+            }
         };
     },
 

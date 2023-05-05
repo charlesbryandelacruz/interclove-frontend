@@ -85,8 +85,12 @@ export default {
                 Swal.fire(response.data,'','success')
                 this.$emit('refreshData')
                 this.$emit('closeDialog')
+                this.resetFields();
             })
         },
+        resetFields(){
+            Object.assign(this.$data, this.$options.data.call(this));
+        }
     },
 };
 </script>
