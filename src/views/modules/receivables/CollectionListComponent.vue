@@ -9,7 +9,7 @@
                         <v-row>
                             <v-col cols="5">
                                 <v-row>
-                                    <v-col>
+                                    <v-col cols="8">
                                         <v-autocomplete 
                                             readonly
                                             v-model="selected_item.customer_id" 

@@ -1,5 +1,7 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="100%">
+    <AddCustomersDialog  @getCustomers="getAllCustomers" :no_discount="true" :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddCustomersDialog>
+
         <v-card>
             <v-card-title>
                 <v-row>
@@ -36,7 +38,7 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col>
+                            <v-col cols="8">
                                 <v-autocomplete 
                                     v-model="invoice.customer_object" 
                                     dense 
@@ -49,6 +51,14 @@
                                     return-object
                                     @change="getAddress()"> 
                                 </v-autocomplete>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-btn 
+                                    color="primary" 
+                                    @click="showAddEditDialog">
+                                        <v-icon>mdi-plus</v-icon>
+                                        Add
+                                </v-btn>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -141,13 +151,13 @@
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" placeholder="UOM" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="UOM" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="Total Price" v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
@@ -159,7 +169,7 @@
                 <v-row class="mt-5">
                     <v-spacer></v-spacer>
                     <v-col class="text-right">
-                        <h3>Total: {{totalAmount | currency('₱ ',2) }}</h3>
+                        <h3>Total: &#8369; {{thousandSeprator(totalAmount) }}</h3>
                     </v-col>
                 </v-row>
                 <v-divider class="mt-2"></v-divider>              
@@ -174,13 +184,17 @@
             </v-card-text>
         </v-card>
     </v-dialog>
+
 </template>
 
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
+import AddCustomersDialog from './AddCustomersDialog.vue'; 
+import ShareFunctionsComponent from '../main/ShareFunctionsComponent.vue';
 export default {
+    mixins: [ShareFunctionsComponent],
     data() {
         return {
             customer_selection:[],
@@ -209,7 +223,20 @@ export default {
                 ],
                 id:0
             },
-            from_quotation:false 
+            from_quotation:false,
+            addDialog:false,
+            pricing_selection:[
+                {
+                    code:"N/A",
+                    id:9999
+                }
+            ],
+            payment_type_selection:[
+                {
+                    name:"CASH",
+                    id:9999
+                }
+            ]
         };
     },
 
@@ -222,7 +249,11 @@ export default {
     },
     computed:{
         totalAmount(){
-            return _.sumBy(this.invoice.invoice_items, 'total_price');
+            let container = this.invoice.invoice_items
+            container.forEach(e=>{
+                e.total_price = Number (String (e.total_price).replaceAll(/,/g, ""))
+            })
+            return _.sumBy(container, 'total_price');
         }
     },
     methods: {
@@ -247,11 +278,11 @@ export default {
         getItemDetails(i){
             let item = _.find(this.item_selection, ['id', this.invoice.invoice_items[i].item_id])
             this.invoice.invoice_items[i].uom = item.uom;
-            this.invoice.invoice_items[i].unit_price = this.thousandSeparator(item.item_prices.si_price);
+            this.invoice.invoice_items[i].unit_price = this.thousandSeprator(item.item_prices.si_price);
         },
         computeAmount(i){
             let total_price = this.invoice.invoice_items[i].unit_price.replaceAll(",", "") * this.invoice.invoice_items[i].quantity
-            this.invoice.invoice_items[i].total_price = this.thousandSeparator(total_price)
+            this.invoice.invoice_items[i].total_price = this.thousandSeprator(total_price)
         },
         addLine(){
             this.invoice.invoice_items.push({
@@ -310,12 +341,18 @@ export default {
                 }
             })
         },
-        thousandSeparator(num){
+        thousandSeprator(num){
             return new Intl.NumberFormat('en-US').format(num);
-        }
+        },
+        showAddEditDialog(){
+            this.addDialog = true
+        },
         
     },
-    props:['dialog']
+    props:['dialog'],
+    components:{
+        AddCustomersDialog
+    }
 };
 </script>
 

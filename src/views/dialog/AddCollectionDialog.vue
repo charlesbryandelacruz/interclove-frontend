@@ -14,6 +14,10 @@
             <v-card-text>
                 <v-divider></v-divider>
                 <h3 class="mt-4">Invoice Details</h3>
+                <v-spacer></v-spacer>
+                    <span v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
+                        Upload Attachment <FileUpload @uploadedData="uploadedData" @reset="clearFileUpload"/>
+                    </span>
                 <v-row class="mt-2">
                     <v-col cols="4">
                         <v-text-field 
@@ -45,6 +49,7 @@
                             readonly
                             dense
                             background-color="grey"
+                            reverse
                             >  
                         </v-text-field>
                     </v-col>
@@ -63,7 +68,7 @@
                             >  
                         </v-autocomplete>
                     </v-col>
-                    <v-col cols="4">
+                    <v-col cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
                         <v-text-field 
                             v-model="collection.cheque_num"
                             :disabled="collection.payment_type_id == 2"
@@ -74,7 +79,7 @@
                             >  
                         </v-text-field>
                     </v-col>
-                    <v-col cols="4" v-if="collection.payment_type_id != 2">
+                    <v-col cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
                         <v-menu
                         ref="menu"
                         v-model="menu"
@@ -91,7 +96,7 @@
                             :disabled="collection.payment_type_id == 2"
                             dense
                             outlined
-                            label="Picker in menu"
+                            label="Date"
                             prepend-icon="mdi-calendar"
                             readonly
                             v-bind="attrs"
@@ -140,6 +145,7 @@
                             label="Amount"
                             outlined
                             dense
+                            reverse
                             >  
                         </v-text-field>
                     </v-col>
@@ -162,12 +168,12 @@
                         </v-data-table>
                     </v-col>
                     <v-col class="text-right">
-                        <h3>Gross Amount: {{selected_item.total_amount | currency('₱ ',2) }}</h3> 
-                        <h3>Paid Amount: {{selected_item.paid_amount | currency('₱ ',2) }}</h3> 
-                        <h3>Balance Amount: {{selected_item.balance_amount | currency('₱ ',2) }}</h3>
+                        <h3>Gross Amount: &#8369; {{thousandSeprator(selected_item.total_amount) }}</h3> 
+                        <h3>Paid Amount: &#8369; {{thousandSeprator(selected_item.paid_amount)}}</h3> 
+                        <h3>Balance Amount: &#8369; {{thousandSeprator(selected_item.balance_amount) }}</h3>
                         <br/>
-                        <h3>Collection: {{collection_amount | currency('₱ ',2) }}</h3>
-                        <h3>(Balance less Collection) : {{totalAmount | currency('₱ ',2)}}</h3>
+                        <h3>Collection: &#8369; {{thousandSeprator(collection_amount)  }}</h3>
+                        <h3>(Balance less Collection) : &#8369; {{thousandSeprator(totalAmount)}}</h3>
                     </v-col>
                 </v-row>
                 <v-divider class="mt-2"></v-divider>              
@@ -186,9 +192,13 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
+import FileUpload from '@/views/main/UploadFileComponent.vue'
+import ShareFunctionsComponentVue from '../main/ShareFunctionsComponent.vue';
 export default {
+    mixins: [ShareFunctionsComponentVue],
     data() {
         return {
+            uploadDialog:false,
             menu:false,
             invoice_selection:[],
             collection:{
@@ -213,14 +223,31 @@ export default {
                 { text: 'Remaining', value: 'remaining_amount',align:'right' },
                 { text: 'Action', value: 'action',align:'center' }
             ],
-            allocatedRemainingCollection:[]
-        };
+            allocatedRemainingCollection:[],
+            file: {},
+            fileSelected: false,
+            showFileSelect: false,
+            uploadedFiles:null
+        }
     },
 
     mounted() {
         this.getAllCollectionTypes();
     },
     methods: {
+        uploadedData(data) {
+            if (!data) {
+                this.uploadedFiles = null;
+            }
+            this.uploadedFiles = data;
+        },
+        clearFileUpload(confirm) {
+            if (confirm) {
+                this.uploadedFiles = null;
+            }
+            this.uploadedFiles = null;
+            this.$refs.fileUpload.reset();
+        },
         formatPrice(value) {
             var formatter = new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -235,11 +262,33 @@ export default {
             })
         },
         saveCollection(){
-            let payload = {
-                collection:this.collection,
-                excess_collection: this.allocatedRemainingCollection
+            const data = new FormData();
+            const config = {
+                headers: {
+                    "content-type": "multipart/form-data",
+                },
+            };  
+            if (this.uploadedFiles == null && this.collection.payment_type_id != 2) {
+                Swal
+                    .fire({
+                        title: "Please Upload Images or Files",
+                        icon: "warning",
+                        dangerMode: true,
+                    })
+                return false
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-collection`,payload).then(response=>{
+
+            if (!!this.uploadedFiles && this.uploadedFiles.attachments.length > 0) {
+                let files = this.uploadedFiles.attachments;
+
+                for (let i = 0; i < _.compact(files).length; i++) {
+                    data.append("files[]", files[i]);
+                }
+            }
+            data.append("collection", JSON.stringify(this.collection));
+            data.append("excess_collection", JSON.stringify(this.allocatedRemainingCollection));
+            
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-collection`,data,config).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.$emit('refreshData')
                 this.$emit('closeDialog')
@@ -281,21 +330,27 @@ export default {
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
-        }
+        },
+        getUploadedData(file) {
+            this.fileSelected = true;
+            this.showFileSelect = false;
+            this.file = file;
+        },
     },
     props:['addDialog','selected_item'],
     watch:{
         addDialog:{
             handler(val){
                 this.showDialog = val
-                this.display_total_amount = this.formatPrice(this.selected_item.total_amount)
+                this.display_total_amount = this.selected_item.total_amount
                 this.collection.invoice_id = this.selected_item.id
                 this.getAllExcesCollections();
+                this.getAllCollectionTypes();
             }
         },
         selected_item:{
             handler(val){
-                
+                console.log(val)
             }
         },
         allocatedRemainingCollection:{
@@ -325,6 +380,9 @@ export default {
             return this.collection.gross_amount
         }
     },
+    components:{
+        FileUpload
+    }
 };
 </script>
 

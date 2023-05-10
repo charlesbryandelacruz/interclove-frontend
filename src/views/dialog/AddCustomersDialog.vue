@@ -117,7 +117,7 @@ data() {
         },
     };
 },
-props:['addDialog','payment_type_selection','pricing_selection'],
+props:['addDialog','payment_type_selection','pricing_selection','no_discount'],
 mounted() {
 
 },
@@ -135,8 +135,15 @@ methods: {
         }
         axios.post(`${process.env.VUE_APP_HOST_API}/api/save-customer`,payload).then(response=>{
             Swal.fire(response.data,'','success')
-            this.$emit('refreshData')
-            this.$emit('closeDialog')
+            if(this.no_discount){
+                this.showDialog = false
+                this.$emit('getCustomers')
+            }
+            else{
+                this.$emit('refreshData')
+                this.$emit('closeDialog')
+
+            }
             this.resetFields();
         })
     },

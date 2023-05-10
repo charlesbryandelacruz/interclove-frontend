@@ -104,16 +104,16 @@
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1"  v-model="item.quantity" dense outlined hide-details label="Quantity" type="number" @blur="computeAmount(i)"> </v-text-field>
+                                            <v-text-field class="mx-1"  reverse v-model="item.quantity" dense outlined hide-details label="Quantity" type="number" @blur="computeAmount(i)"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.unit_price" readonly dense outlined hide-details label="Unit Price" background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.unit_price" readonly dense outlined hide-details label="Unit Price" background-color="grey"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.uom" readonly dense outlined hide-details label="Unit" background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.uom" readonly dense outlined hide-details label="Unit" background-color="grey"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.total_price" readonly dense outlined hide-details label="Total Price"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.total_price" readonly dense outlined hide-details label="Total Price"> </v-text-field>
                                         </v-col>
                                     </v-row> 
                                 </v-col>
@@ -139,9 +139,10 @@ import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
+import ShareFunctionsComponent from '@/views/main/ShareFunctionsComponent.vue';
 export default {
     name: 'PosLaravelVueProductComponent',
-
+    mixins:[ShareFunctionsComponent],
     data() {
         return {
             items:[],
@@ -241,6 +242,17 @@ export default {
         AddCustomersDialog,
         ListComponentVue
     },
+    watch:{
+        'selected_item.invoice_items' : function(newVal, oldVal) { 
+            newVal.forEach(e=>{
+                e.total_price = this.thousandSeprator(e.total_price)
+                e.unit_price = this.thousandSeprator(e.unit_price)
+            })
+        },
+        'selected_item.total_amount' :function(newVal, oldVal) {  
+            this.selected_item.total_amount = this.thousandSeprator(newVal)
+        }
+    }
 };
 </script>
 

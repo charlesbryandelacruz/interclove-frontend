@@ -78,7 +78,7 @@
                                 </v-row>
                                 <v-row>
                                     <v-col cols="6">
-                                        <v-text-field readonly v-model="selected_item.po_num" dense outlined hide-details label="PO #"> </v-text-field>
+                                        <!-- <v-text-field readonly v-model="selected_item.po_num" dense outlined hide-details label="PO #"> </v-text-field> -->
                                     </v-col>
                                     <v-col cols="6">
                                         <!-- <v-text-field readonly v-model="selected_item.sales_account_id" dense outlined hide-details label="GL Sales Account"> </v-text-field> -->
@@ -137,16 +137,16 @@
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1"  v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.unit_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.unit_price" dense outlined hide-details background-color="grey" @blur="formatNumber(item.unit_price,i,'unit_price')"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
+                                            <v-text-field class="mx-1" reverse v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
                                         </v-col>
                                     </v-row> 
                                 </v-col>
@@ -154,16 +154,43 @@
                         </v-card>
                         <v-row class="mt-5">
                             <v-spacer></v-spacer>
-                            <v-col class="text-right">
+                            <v-col cols="3" class="text-right">
                                 <v-text-field 
+                                reverse
                                 dense
                                 outlined
                                 hide-details
                                 v-model="selected_item.total_amount">
                             </v-text-field>
-                                <!-- <h3>Total: {{selected_item.total_amount | currency('₱ ',2) }}</h3> -->
+                                
                             </v-col>
                         </v-row>
+                        <v-card class="mt-2">
+                            <v-row>
+                                <v-col>
+                                    <v-card-title>
+                                        <h5>  
+                                            Allocated Payments
+                                        </h5> 
+                                    </v-card-title>
+                                    <v-divider class="mb-2"></v-divider>
+                                    
+                                            <v-data-table
+                                            :headers="paymentHeaders"
+                                            :items="selected_item.collections">
+
+                                            <template v-slot:[`item.gross_amount`]="{ item }">
+                                                {{ item.gross_amount | currency('₱ ',2) }}
+                                            </template>
+                                            <template v-slot:[`item.remaining_amount`]="{ item }">
+                                                {{ item.remaining_amount | currency('₱ ',2) }}
+                                            </template>
+
+                                            </v-data-table>
+                                       
+                                </v-col>
+                            </v-row>
+                        </v-card>
                     </v-card-text>
             </v-col>
         </v-row>
@@ -175,12 +202,13 @@
 <script>
 import AddCollectionDialog from '../../dialog/AddCollectionDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
+import ShareFunctionsComponentVue from '@/views/main/ShareFunctionsComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
 export default {
     name: 'PosLaravelVueProductComponent',
-
+    mixins:[ShareFunctionsComponentVue],
     data() {
         return {
             customer_selection:[],
@@ -211,9 +239,19 @@ export default {
                 paid_amount:0,
                 id:0,
                 size:'',
+                collections:[]
             },
             addDialog:false,
-            items:[]
+            items:[],
+            paymentHeaders:[
+                    { text: 'Reference #', value: 'reference_num' },
+                    { text: 'Transaction #', value: 'cheque_num' },
+                    { text: 'Transaction Date', value: 'transaction_date' },
+                    { text: 'Amount', value: 'gross_amount' },
+                    { text: 'Remaining Amount', value: 'remaining_amount' },
+                    { text: 'Payment Date', value: 'payment_date' },
+                ],
+            paymentItems:[]
         };
     },
 
@@ -223,7 +261,13 @@ export default {
         this.getAllItems()
     },
     methods: {
+        formatNumber(number, index, field) {
+            alert(1)
+            this.selected_item.invoice_items[index][field] =
+                this.thousandSeprator(number);
+        },
         selectItem(item){
+            console.log(item)
             this.selected_item = item
         },
         closeDialog(){
@@ -254,7 +298,7 @@ export default {
         },
         computeAmount(i){
             let total_price = this.selected_item.invoice_items[i].unit_price * this.selected_item.invoice_items[i].quantity
-            this.selected_item.invoice_items[i].total_price = total_price
+            this.selected_item.invoice_items[i].total_price = this.thousandSeprator(total_price)
         },
         addLine(){
             this.selected_item.invoice_items.push({
@@ -281,6 +325,17 @@ export default {
         AddCollectionDialog,
         ListComponentVue
     },
+    watch:{
+        'selected_item.invoice_items' : function(newVal, oldVal) { 
+            newVal.forEach(e=>{
+                e.total_price = this.thousandSeprator(e.total_price)
+                e.unit_price = this.thousandSeprator(e.unit_price)
+            })
+        },
+        'selected_item.total_amount' :function(newVal, oldVal) {  
+            this.selected_item.total_amount = this.thousandSeprator(newVal)
+        }
+    }
 };
 </script>
 
