@@ -76,6 +76,9 @@
                                 :items="selected_item.salesman_transactions"
                                 >
                                 
+                                <template v-slot:[`item.total_amount`]="{ item }">
+                                    {{ item.total_amount | currency('₱ ',2) }}
+                                </template>
                             </v-data-table>
                         </v-col>
                       
@@ -113,7 +116,7 @@ export default {
                     { text: 'Type', value: 'invoice_date' },
                     { text: 'Customer/Supplier', value: 'customer.company_name' },
                     { text: 'Invoice Number', value: 'invoice_num' },
-                    { text: 'Total Amount', value: 'total_amount' },
+                    { text: 'Total Amount', value: 'total_amount', align:'right'},
                 ],
                 items:[]
             }

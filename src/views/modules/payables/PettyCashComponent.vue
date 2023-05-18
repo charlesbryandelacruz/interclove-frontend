@@ -19,22 +19,30 @@
                                 >
                                     Cancel
                                 </v-btn>
-                                <v-btn 
+                                <!-- <v-btn 
                                     small
                                     class="mr-2" 
                                     :color="!!isDisabled ? 'secondary' : 'green'" 
                                     @click="saveItem(); isDisabled = !isDisabled"
                                 >
                                     {{ !!isDisabled ? 'Edit' : 'Save'}}
-                                </v-btn>
-                               
+                                </v-btn> -->
                                 <v-btn 
                                     v-if="isDisabled"
                                     small
+                                    class="mr-2" 
                                     color="primary" 
+                                    @click="showAddEditDialogPettyCash">
+                                        <v-icon>mdi-plus</v-icon>
+                                        Add New Petty Cash
+                                </v-btn>
+                                <v-btn 
+                                    v-if="isDisabled"
+                                    small
+                                    color="orange" 
                                     @click="showAddEditDialog">
                                         <v-icon>mdi-plus</v-icon>
-                                        Add
+                                        Add Transaction
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -62,7 +70,8 @@
                                     v-model="selected_item.remaining_amount" 
                                     dense 
                                     outlined 
-                                    hide-details 
+                                    hide-details
+                                    reverse
                                     label="Remaining"> 
                                 </v-text-field>
                             </v-col>
@@ -72,7 +81,8 @@
                                     v-model="selected_item.gross_amount" 
                                     dense 
                                     outlined 
-                                    hide-details 
+                                    hide-details
+                                    reverse
                                     label="Total Amount"> 
                                 </v-text-field>
                             </v-col>
@@ -84,31 +94,13 @@
                             <v-data-table 
                                 dense
                                 :headers="transaction.headers"
-                                :items="transaction.items"
+                                :items="selected_item.petty_cash_items"
                                 >
-                                <template v-slot:[`item.si_price`]="{ item }">
-                                    {{ item.si_price | currency('₱ ',2) }}
+                                <template v-slot:[`item.allocated_amount`]="{ item }">
+                                    {{ item.allocated_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.si_price_1`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .10) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.si_price_2`]="{ item }">
-                                    {{( item.si_price - item.si_price * .15) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.si_price_3`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .20) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price`]="{ item }">
-                                    {{ item.dr_price | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_1`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .10) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_2`]="{ item }">
-                                    {{( item.dr_price - item.dr_price * .15) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_3`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .20) | currency('₱ ',2) }}
+                                <template v-slot:[`item.created_at`]="{ item }">
+                                    {{ item.created_at | formatDate }}
                                 </template>
                             </v-data-table>
                         </v-col>
@@ -117,16 +109,18 @@
                     </v-card-text>
             </v-col>
         </v-row>
-        <AddProductsDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddProductsDialogVue>
+        <AddPettyCashItemDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddPettyCashItemDialog>
+        <AddPettyCashDialog :addDialogPettyCash="addDialogPettyCash" @closeDialogPettyCash="closeDialogPettyCash()" @refreshData="getAll()" :selected_item="selected_item"></AddPettyCashDialog>
     </v-app>
   
 </template>
 
 <script>
 import Swal from 'sweetalert2';
-import AddProductsDialogVue from '../../dialog/AddProductsDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
+import AddPettyCashItemDialog from '@/views/dialog/AddPettyCashItemDialog.vue';
+import AddPettyCashDialog from '@/views/dialog/AddPettyCashDialog.vue';
 export default {
     name: 'PosLaravelVueProductComponent',
 
@@ -138,18 +132,20 @@ export default {
                 title:'',
                 gross_amount:0,
                 remaining_amount:0,
-                id:''
+                id:'',
+                petty_cash_items:[]
             },
             isDisabled:true,
             transaction:{
                 headers:[
                     { text: 'Date', value: 'created_at' },
-                    { text: 'Type', value: 'expense_type_by_name' },
+                    { text: 'Type', value: 'expense_type_id' },
                     { text: 'Description', value: 'description' },
                     { text: 'Amount', value: 'allocated_amount' },
                 ],
                 items:[]
-            }
+            },
+            addDialogPettyCash:false
         };
     },
 
@@ -164,8 +160,14 @@ export default {
         closeDialog(){
             this.addDialog = false
         },
+        closeDialogPettyCash(){
+            this.addDialogPettyCash = false
+        },
         showAddEditDialog(){
             this.addDialog = true
+        },
+        showAddEditDialogPettyCash(){
+            this.addDialogPettyCash = true
         },
         cancelItem(){
             Swal.fire({
@@ -204,7 +206,8 @@ export default {
         }
     },
     components:{
-        AddProductsDialogVue,
+        AddPettyCashItemDialog,
+        AddPettyCashDialog,
         ListComponentVue
     }
 };

@@ -85,7 +85,6 @@ export default {
             { title: 'List of Invoices',link:'/invoice-list' },
             { title: 'Add Invoice',link:'/add-invoice' },
             { title: 'List of Collection',link:'/collection-list' },
-            { title: 'Add Collection',link:'/add-collection' },
           ],
           title: 'Receivables',
         },
@@ -144,7 +143,5 @@ export default {
 </script>
 
 <style>
-html{
-  overflow: hidden;
-}
+
 </style>

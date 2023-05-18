@@ -116,33 +116,31 @@
                         <v-col>
                             <v-data-table 
                                 dense
-                                :headers="pricingTable.headers"
-                                :items="pricingTable.items"
+                                :headers="transaction.headers"
+                                :items="selected_item.invoices"
                                 >
-                                <template v-slot:[`item.si_price`]="{ item }">
-                                    {{ item.si_price | currency('₱ ',2) }}
+                                <template v-slot:[`item.invoice_num`]="{ item }">
+                                    {{ item.invoice_num }}
                                 </template>
-                                <template v-slot:[`item.si_price_1`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .10) | currency('₱ ',2) }}
+                                <template v-slot:[`item.paid_amount`]="{ item }">
+                                    {{ item.paid_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.si_price_2`]="{ item }">
-                                    {{( item.si_price - item.si_price * .15) | currency('₱ ',2) }}
+                                <template v-slot:[`item.quotation_num`]="{ item }">
+                                    {{ item.quotation_num }}
                                 </template>
-                                <template v-slot:[`item.si_price_3`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .20) | currency('₱ ',2) }}
+                                <template v-slot:[`item.salesman_text`]="{ item }">
+                                    {{ item.salesman_text  }}
                                 </template>
-                                <template v-slot:[`item.dr_price`]="{ item }">
-                                    {{ item.dr_price | currency('₱ ',2) }}
+                                <template v-slot:[`item.total_amount`]="{ item }">
+                                    {{ item.total_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.dr_price_1`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .10) | currency('₱ ',2) }}
+                                <template v-slot:[`item.balance_amount`]="{ item }">
+                                    {{ item.balance_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.dr_price_2`]="{ item }">
-                                    {{( item.dr_price - item.dr_price * .15) | currency('₱ ',2) }}
+                                <template v-slot:[`item.invoice_date`]="{ item }">
+                                    {{ item.invoice_date }}
                                 </template>
-                                <template v-slot:[`item.dr_price_3`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .20) | currency('₱ ',2) }}
-                                </template>
+
                             </v-data-table>
                         </v-col>
                       
@@ -181,19 +179,20 @@ export default {
                         contact_number:'',
                     }
                 ],
-                id:0
+                id:0,
+                invoices:[]
             },
             isDisabled:true,
             pricing_selection:[],
             payment_type_selection:[],
-            pricingTable:{
+            transaction:{
                 headers:[
-                    { text: 'Date', value: 'transaction_date' },
-                    { text: 'Type', value: 'transaction_type' },
-                    { text: 'Customer/Supplier', value: 'customer_supplier' },
-                    { text: 'Add/Subtract', value: 'add' },
-                    { text: 'Quantity', value: 'quantity' },
-                    { text: 'Total Amount', value: 'total_amount' },
+                    { text: 'SI #', value: 'invoice_num' },
+                    { text: 'Date', value: 'invoice_date' },
+                    { text: 'Salesman', value: 'salesman_text' },
+                    { text: 'Total Amount', value: 'total_amount',align:'right' },
+                    { text: 'Balance Amount', value: 'balance_amount',align:'right' },
+                    { text: 'Paid Amount', value: 'paid_amount',align:'right' },
                 ],
                 items:[]
             }

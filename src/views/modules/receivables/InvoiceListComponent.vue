@@ -20,7 +20,6 @@
                             </v-btn>
                         </v-col>
                     </v-row>
-    
                 </v-card-title>
                     <v-card-text>
                         <v-row>
@@ -185,7 +184,9 @@
                                             <template v-slot:[`item.remaining_amount`]="{ item }">
                                                 {{ item.remaining_amount | currency('₱ ',2) }}
                                             </template>
-
+                                            <template v-slot:[`item.action`]="{ item }">
+                                                <v-btn fab x-small icon text color="orange" @click="showFileViewer(item)"><v-icon>mdi-eye</v-icon></v-btn>
+                                            </template>
                                             </v-data-table>
                                        
                                 </v-col>
@@ -195,6 +196,7 @@
             </v-col>
         </v-row>
         <AddCollectionDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddCollectionDialog>
+        <BaseFileViewerComponentVue :show="fileDialog.show" :files="fileDialog.files" @closeFileViewer="closeFileViewer"></BaseFileViewerComponentVue>
     </v-app>
   
 </template>
@@ -203,6 +205,7 @@
 import AddCollectionDialog from '../../dialog/AddCollectionDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import ShareFunctionsComponentVue from '@/views/main/ShareFunctionsComponent.vue';
+import BaseFileViewerComponentVue from '@/views/main/BaseFileViewerComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
@@ -247,11 +250,16 @@ export default {
                     { text: 'Reference #', value: 'reference_num' },
                     { text: 'Transaction #', value: 'cheque_num' },
                     { text: 'Transaction Date', value: 'transaction_date' },
-                    { text: 'Amount', value: 'gross_amount' },
-                    { text: 'Remaining Amount', value: 'remaining_amount' },
+                    { text: 'Amount', value: 'gross_amount',align:'right' },
+                    { text: 'Remaining Amount', value: 'remaining_amount',align:'right' },
                     { text: 'Payment Date', value: 'payment_date' },
+                    { text: 'View Files', value: 'action' },
                 ],
-            paymentItems:[]
+            paymentItems:[],
+            fileDialog:{
+                show:false,
+                files:[]
+            }
         };
     },
 
@@ -262,13 +270,12 @@ export default {
     },
     methods: {
         formatNumber(number, index, field) {
-            alert(1)
             this.selected_item.invoice_items[index][field] =
                 this.thousandSeprator(number);
         },
         selectItem(item){
-            console.log(item)
             this.selected_item = item
+            this.collectionId = this.selected_item.id
         },
         closeDialog(){
             this.addDialog = false
@@ -320,10 +327,23 @@ export default {
                 this.items = response.data
             })
         },
+        showFileViewer(item){
+            this.fileDialog = {
+                show:true,
+                files:item.collection_files
+            }
+        },
+        closeFileViewer(){
+            this.fileDialog = {
+                show:false,
+                files:[]
+            }
+        }
     },
     components:{
         AddCollectionDialog,
-        ListComponentVue
+        ListComponentVue,
+        BaseFileViewerComponentVue
     },
     watch:{
         'selected_item.invoice_items' : function(newVal, oldVal) { 

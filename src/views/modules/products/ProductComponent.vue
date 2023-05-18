@@ -99,6 +99,7 @@
                                 outlined
                                 dense
                                 hide-details
+                                reverse
                                 label="Price Bought"
                                 readonly>
 
@@ -118,10 +119,11 @@
 import Swal from 'sweetalert2';
 import AddProductsDialogVue from '../../dialog/AddProductsDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
+import ShareFunctionsComponent from '@/views/main/ShareFunctionsComponent.vue';
 import axios from 'axios';
 export default {
     name: 'PosLaravelVueProductComponent',
-
+    mixins:[ShareFunctionsComponent],
     data() {
         return {
             addDialog:false,
@@ -159,6 +161,7 @@ export default {
     methods: {
         selectItem(item){
             this.selected_item = item
+            this.selected_item.item_prices.total_cost = this.thousandSeprator(this.selected_item.item_prices.total_cost)
         },
         closeDialog(){
             this.addDialog = false

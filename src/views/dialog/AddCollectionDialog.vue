@@ -67,6 +67,16 @@
                             dense
                             >  
                         </v-autocomplete>
+                        <v-autocomplete cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id"
+                            v-model="collection.bank_id"
+                            label="Bank"
+                            :items="[{name:'BDO',id:1},{name:'BPI',id:2}]"
+                            item-text="name"
+                            item-value="id"
+                            outlined
+                            dense
+                            >  
+                        </v-autocomplete>
                     </v-col>
                     <v-col cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
                         <v-text-field 
@@ -286,8 +296,12 @@ export default {
                 }
             }
             data.append("collection", JSON.stringify(this.collection));
-            data.append("excess_collection", JSON.stringify(this.allocatedRemainingCollection));
-            
+            if (this.allocatedRemainingCollection.length > 0) {
+                for (var i = 0; i < _.compact(this.allocatedRemainingCollection).length; i++) {
+                    data.append('excess_collection[]', JSON.stringify(this.allocatedRemainingCollection[i]));
+                }
+            }
+         
             axios.post(`${process.env.VUE_APP_HOST_API}/api/save-collection`,data,config).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.$emit('refreshData')
