@@ -91,8 +91,9 @@ export default {
         {
           action: 'mdi-cash-multiple',
           items: [
-            { title: 'List of Purchases',link:'/' },
-            { title: 'List of Payments',link:'/' },
+            { title: 'List of Purchases',link:'/purchase-list' },
+            { title: 'Add Purchase',link:'/add-purchase' },
+            { title: 'List of Payments',link:'/payment-list' },
             { title: 'Expenses',link:'/' },
             { title: 'Petty Cash',link:'/petty-cash' },
           ],

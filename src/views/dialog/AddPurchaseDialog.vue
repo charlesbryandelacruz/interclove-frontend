@@ -6,7 +6,7 @@
             <v-card-title>
                 <v-row>
                     <v-col class="text-left">
-                        Add New Invoice
+                        Add New Purchase
                     </v-col>
                     <v-col class="text-right">
                         <v-btn text @click="closeDialog()"><v-icon>mdi-close-circle</v-icon></v-btn>
@@ -17,10 +17,10 @@
                 <v-row>
                     <v-col cols="5">
                         <v-row>
-                            <v-col>
+                            <!-- <v-col>
                                 <v-btn color="green" width="100%" @click="showAllQuotations()">Extract From Quotation</v-btn>
-                            </v-col>
-                            <v-col>
+                            </v-col> -->
+                            <!-- <v-col>
                                 <v-autocomplete 
                                     v-if="from_quotation"
                                     v-model="quotation" 
@@ -35,17 +35,17 @@
                                     @change="getQuotationDetails()"
                                     > 
                                 </v-autocomplete>
-                            </v-col>
+                            </v-col> -->
                         </v-row>
                         <v-row>
                             <v-col cols="8">
                                 <v-autocomplete 
-                                    v-model="invoice.customer_object" 
+                                    v-model="purchase.supplier_object" 
                                     dense 
                                     outlined 
                                     hide-details 
                                     label="Customer" 
-                                    :items="customer_selection" 
+                                    :items="supplier_selection" 
                                     item-text="name"
                                     item-value="id"
                                     return-object
@@ -63,7 +63,7 @@
                         </v-row>
                         <v-row>
                             <v-col>
-                                <v-text-field  v-model="invoice.address" dense outlined hide-details label="Address"> </v-text-field>
+                                <v-text-field  v-model="purchase.address" dense outlined hide-details label="Address"> </v-text-field>
                             </v-col>
                         </v-row>
                         
@@ -71,20 +71,20 @@
                     <v-col cols="4">
                         <v-row>
                             <v-col cols="6">
-                                <v-text-field readonly background-color="grey" v-model="invoice.invoice_num" dense outlined hide-details label="Invoice #"> </v-text-field>
+                                <v-text-field readonly background-color="grey" v-model="purchase.purchase_num" dense outlined hide-details label="Purchase #"> </v-text-field>
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="invoice.terms" dense outlined hide-details label="Terms"> </v-text-field>
+                                <v-text-field v-model="purchase.terms" dense outlined hide-details label="Terms"> </v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col>
-                                <v-text-field readonly v-model="invoice.invoice_date" dense outlined hide-details label="Invoice Date"> </v-text-field>
+                                <v-text-field readonly v-model="purchase.purchase_date" dense outlined hide-details label="Purchase Date"> </v-text-field>
                             </v-col>
                             <v-col>
                                 <v-autocomplete 
                                     disabled
-                                    v-model="invoice.salesman_id" 
+                                    v-model="purchase.salesman_id" 
                                     dense 
                                     outlined 
                                     hide-details 
@@ -98,7 +98,7 @@
                         </v-row>
                         <v-row>
                             <v-col cols="6">
-                                <!-- <v-text-field v-model="invoice.po_num" dense outlined hide-details label="PO #"> </v-text-field> -->
+                                <!-- <v-text-field v-model="purchase.po_num" dense outlined hide-details label="PO #"> </v-text-field> -->
                             </v-col>
                         </v-row>
                     </v-col>
@@ -107,7 +107,7 @@
                         row="3"
                         outlined
                         label="Remarks"
-                        v-model="invoice.remarks"
+                        v-model="purchase.remarks"
                         >
                         </v-textarea>
                     </v-col>
@@ -138,7 +138,7 @@
                                     <h3>Total Price</h3>    
                                 </v-col>
                             </v-row>
-                            <v-row  v-for="(item,i) in invoice.invoice_items" :key="i" class="ma-1 pa-0">
+                            <v-row  v-for="(item,i) in purchase.purchase_items" :key="i" class="ma-1 pa-0">
                                 <v-col class="pa-0 ma-0">
                                     <v-autocomplete 
                                         placeholder="Item" v-model="item.item_id" 
@@ -155,7 +155,7 @@
                                     <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" dense outlined hide-details @blur="computeAmount(i)"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="UOM" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
@@ -177,8 +177,8 @@
                     <v-row class="mt-2"> 
                         <v-col class="text-right">
                             <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn>
-                            <v-btn :disabled="from_quotation" small color="green" @click="saveInvoice(true)" class="mr-2">Save as Quotation</v-btn>
-                            <v-btn small color="primary" @click="saveInvoice(false)">Submit</v-btn>
+                            <v-btn :disabled="from_quotation" small color="green" @click="savePurchase(true)" class="mr-2">Save as Quotation</v-btn>
+                            <v-btn small color="primary" @click="savePurchase(false)">Submit</v-btn>
                             
                         </v-col>
                     </v-row>
@@ -198,22 +198,22 @@ export default {
     mixins: [ShareFunctionsComponent],
     data() {
         return {
-            customer_selection:[],
+            supplier_selection:[],
             salesman_selection:[],
             item_selection:[],
             quotation_selection:[],
             quotation:'',
-            invoice:{
-                customer_object:'',
-                invoice_num:'',
+            purchase:{
+                supplier_object:'',
+                purchase_num:'',
                 address:'',
-                customer_id:'',
-                invoice_date:moment().format('YYYY-MM-DD'),
+                supplier_id:'',
+                purchase_date:moment().format('YYYY-MM-DD'),
                 terms:'',
                 remarks:'',
                 salesman_id:0,
                 is_quotation:0,
-                invoice_items:[
+                purchase_items:[
                     {
                         item_id:0,
                         quantity:0,
@@ -243,14 +243,14 @@ export default {
 
     mounted() {
         this.getAllSalesman()
-        this.getInvoiceNum()
+        this.getPurchaseNum()
         this.getAllCustomers()
         this.getAllItems()
         
     },
     computed:{
         totalAmount(){
-            let container = this.invoice.invoice_items
+            let container = this.purchase.purchase_items
             container.forEach(e=>{
                 e.total_price = Number (String (e.total_price).replaceAll(/,/g, ""))
             })
@@ -259,18 +259,18 @@ export default {
     },
     methods: {
         closeDialog(){
-            this.$router.push({name:'invoice-list'})
+            this.$router.push({name:'purchase-list'})
         },
         getAllCustomers(){
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-customers`).then(response=>{
-                this.customer_selection = response.data
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-suppliers`).then(response=>{
+                this.supplier_selection = response.data
             })
         },
         getAddress(){
-            this.invoice.address = this.invoice.customer_object.address;
-            this.invoice.customer_id = this.invoice.customer_object.id;
-            this.invoice.terms = this.invoice.customer_object.terms;
-            this.invoice.salesman_id = this.invoice.customer_object.salesman_id
+            this.purchase.address = this.purchase.supplier_object.address;
+            this.purchase.supplier_id = this.purchase.supplier_object.id;
+            this.purchase.terms = this.purchase.supplier_object.terms;
+            this.purchase.salesman_id = this.purchase.supplier_object.salesman_id
         },
         getAllItems(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
@@ -278,16 +278,16 @@ export default {
             })
         },
         getItemDetails(i){
-            let item = _.find(this.item_selection, ['id', this.invoice.invoice_items[i].item_id])
-            this.invoice.invoice_items[i].uom = item.uom;
-            this.invoice.invoice_items[i].unit_price = this.thousandSeprator(item.item_prices.si_price);
+            let item = _.find(this.item_selection, ['id', this.purchase.purchase_items[i].item_id])
+            this.purchase.purchase_items[i].uom = item.uom;
+            this.purchase.purchase_items[i].unit_price = this.thousandSeprator(item.item_prices.si_price);
         },
         computeAmount(i){
-            let total_price = this.invoice.invoice_items[i].unit_price.replaceAll(",", "") * this.invoice.invoice_items[i].quantity
-            this.invoice.invoice_items[i].total_price = this.thousandSeprator(total_price)
+            let total_price = this.purchase.purchase_items[i].unit_price.replaceAll(",", "") * this.purchase.purchase_items[i].quantity
+            this.purchase.purchase_items[i].total_price = this.thousandSeprator(total_price)
         },
         addLine(){
-            this.invoice.invoice_items.push({
+            this.purchase.purchase_items.push({
                 item_id:0,
                 quantity:0,
                 unit_price:0,
@@ -296,26 +296,26 @@ export default {
             })
         },
         removeLine(){
-            this.invoice.invoice_items.pop()
+            this.purchase.purchase_items.pop()
         },
-        saveInvoice(is_quotation){
-            Object.assign(this.invoice,{total_amount:this.totalAmount})
+        savePurchase(is_quotation){
+            Object.assign(this.purchase,{total_amount:this.totalAmount})
             let payload = {
-                invoice:this.invoice,
+                purchase:this.purchase,
                 from_quotation:this.from_quotation
             }
             if(is_quotation){
-                this.invoice.is_quotation = 1
+                this.purchase.is_quotation = 1
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-invoice`,payload).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-purchase`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.closeDialog()
             })
             
         },
-        getInvoiceNum(){
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-invoice-num`).then(response=>{
-                this.invoice.invoice_num = response.data;    
+        getPurchaseNum(){
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-purchase-num`).then(response=>{
+                this.purchase.purchase_num = response.data;    
             })
         },
         getAllSalesman(){
@@ -324,19 +324,19 @@ export default {
             })
         },
         getQuotationDetails(){
-            this.quotation.invoice_num = this.invoice.invoice_num
-            this.invoice = this.quotation
-            let c = this.customer_selection.filter(e=>{
-                if(e.id == this.invoice.customer_id) return e
+            this.quotation.purchase_num = this.purchase.purchase_num
+            this.purchase = this.quotation
+            let c = this.supplier_selection.filter(e=>{
+                if(e.id == this.purchase.supplier_id) return e
             }) 
-            this.invoice.customer_object = c[0]
+            this.purchase.supplier_object = c[0]
         },
         showAllQuotations(){
             this.from_quotation = true
             let payload = {
                 is_quotation:1,
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-invoices`,payload).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 this.quotation_selection = response.data
                 if(this.quotation_selection.length == 0){
                     this.from_quotation = false

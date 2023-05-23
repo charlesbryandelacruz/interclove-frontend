@@ -11,23 +11,6 @@
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
-                                    v-if="!isDisabled"
-                                    small
-                                    class="mr-2" 
-                                    color="grey text--white"
-                                    @click="isDisabled = !isDisabled"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <!-- <v-btn 
-                                    small
-                                    class="mr-2" 
-                                    :color="!!isDisabled ? 'secondary' : 'green'" 
-                                    @click="saveItem(); isDisabled = !isDisabled"
-                                >
-                                    {{ !!isDisabled ? 'Edit' : 'Save'}}
-                                </v-btn> -->
-                                <v-btn 
                                     v-if="isDisabled"
                                     small
                                     class="mr-2" 
@@ -36,6 +19,8 @@
                                         <v-icon>mdi-plus</v-icon>
                                         Add New Petty Cash
                                 </v-btn>
+                            </v-col>
+                            <v-col class="text-right">
                                 <v-btn 
                                     v-if="isDisabled"
                                     small
@@ -44,6 +29,16 @@
                                         <v-icon>mdi-plus</v-icon>
                                         Add Transaction
                                 </v-btn>
+                            </v-col>
+                            <v-col class="text-right">
+                                <v-btn 
+                                v-if="isDisabled"
+                                small
+                                color="orange" 
+                                @click="showFundsAddEditDialog">
+                                    <v-icon>mdi-plus</v-icon>
+                                    Add More Funds
+                            </v-btn>
                             </v-col>
                         </v-row>
         
@@ -111,6 +106,7 @@
         </v-row>
         <AddPettyCashItemDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddPettyCashItemDialog>
         <AddPettyCashDialog :addDialogPettyCash="addDialogPettyCash" @closeDialogPettyCash="closeDialogPettyCash()" @refreshData="getAll()" :selected_item="selected_item"></AddPettyCashDialog>
+        <AddFundsPettyCashDialog :addFundsDialogPettyCash="addFundsDialogPettyCash" @closeFundsDialogPettyCash="closeFundsDialogPettyCash()" @refreshData="getAll()" :selected_item="selected_item"></AddFundsPettyCashDialog>
     </v-app>
   
 </template>
@@ -121,6 +117,7 @@ import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import AddPettyCashItemDialog from '@/views/dialog/AddPettyCashItemDialog.vue';
 import AddPettyCashDialog from '@/views/dialog/AddPettyCashDialog.vue';
+import AddFundsPettyCashDialog from '@/views/dialog/AddFundsPettyCashDialog.vue';
 export default {
     name: 'PosLaravelVueProductComponent',
 
@@ -145,7 +142,8 @@ export default {
                 ],
                 items:[]
             },
-            addDialogPettyCash:false
+            addDialogPettyCash:false,
+            addFundsDialogPettyCash:false,
         };
     },
 
@@ -163,11 +161,17 @@ export default {
         closeDialogPettyCash(){
             this.addDialogPettyCash = false
         },
+        closeFundsDialogPettyCash(){
+            this.addFundsDialogPettyCash = false
+        },
         showAddEditDialog(){
             this.addDialog = true
         },
         showAddEditDialogPettyCash(){
             this.addDialogPettyCash = true
+        },
+        showFundsAddEditDialog(){
+            this.addFundsDialogPettyCash = true
         },
         cancelItem(){
             Swal.fire({
@@ -208,7 +212,8 @@ export default {
     components:{
         AddPettyCashItemDialog,
         AddPettyCashDialog,
-        ListComponentVue
+        ListComponentVue,
+        AddFundsPettyCashDialog
     }
 };
 </script>

@@ -79,6 +79,23 @@
                                 > 
                             </v-autocomplete>
                         </v-col>
+                        <v-col>
+                            <v-autocomplete 
+                                :readonly="isDisabled"
+                                v-model="selected_item.salesman_id" 
+                                dense 
+                                outlined 
+                                hide-details 
+                                label="Salesman" 
+                                :items="salesman_selection" 
+                                item-text="name"
+                                item-value="id"
+                                > 
+                            </v-autocomplete>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field  :readonly="isDisabled"  v-model="selected_item.credit_limit" dense outlined hide-details label="Credit Limit"> </v-text-field>
+                        </v-col>
                         <v-col cols="4">
                             <v-text-field  :readonly="isDisabled"  v-model="selected_item.terms" dense outlined hide-details label="Terms"> </v-text-field>
                         </v-col>
@@ -180,11 +197,13 @@ export default {
                     }
                 ],
                 id:0,
-                invoices:[]
+                invoices:[],
+                credit_limit:0
             },
             isDisabled:true,
             pricing_selection:[],
             payment_type_selection:[],
+            salesman_selection:[],
             transaction:{
                 headers:[
                     { text: 'SI #', value: 'invoice_num' },
@@ -203,6 +222,7 @@ export default {
         this.getAll();
         this.getAllPricing();
         this.getAllPaymentTypes();
+        this.getAllSalesman();
     },
 
     methods: {
@@ -269,6 +289,11 @@ export default {
         },
         removeLine(){
             this.selected_item.contacts.pop()
+        },
+        getAllSalesman(){
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-salesmans`).then(response=>{
+                this.salesman_selection = response.data
+            })
         },
     },
     components:{

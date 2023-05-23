@@ -4,7 +4,7 @@
             <v-card-title>
                 <v-row>
                     <v-col class="text-left">
-                        Add New Collection
+                        Add New Payment
                     </v-col>
                     <v-col class="text-right">
                         <v-btn text icon fab @click="$emit('closeDialog',false)"><v-icon>mdi-close-circle</v-icon></v-btn>
@@ -13,16 +13,16 @@
             </v-card-title>  
             <v-card-text>
                 <v-divider></v-divider>
-                <h3 class="mt-4">Invoice Details</h3>
+                <h3 class="mt-4">Purchase Details</h3>
                 <v-spacer></v-spacer>
-                    <span v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
+                    <span v-if="payment.payment_type_id != 2 && !!payment.payment_type_id">
                         Upload Attachment <FileUpload @uploadedData="uploadedData" @reset="clearFileUpload"/>
                     </span>
                 <v-row class="mt-2">
                     <v-col cols="4">
                         <v-text-field 
-                            v-model="selected_item.invoice_num"
-                            label="Invoice #"
+                            v-model="selected_item.purchase_num"
+                            label="Purchase #"
                             outlined
                             readonly
                             dense
@@ -32,8 +32,8 @@
                     </v-col>
                     <v-col cols="4">
                         <v-text-field 
-                            v-model="selected_item.invoice_date"
-                            label="Invoice Date"
+                            v-model="selected_item.purchase_date"
+                            label="Purchase Date"
                             outlined
                             readonly
                             dense
@@ -44,7 +44,7 @@
                     <v-col cols="4">
                         <v-text-field 
                             v-model="display_total_amount"
-                            label="Invoice Amount"
+                            label="Purchase Amount"
                             outlined
                             readonly
                             dense
@@ -54,12 +54,12 @@
                         </v-text-field>
                     </v-col>
                 </v-row>
-                <h3 class="mt-2">Collection Detail</h3>
+                <h3 class="mt-2">Payment Detail</h3>
                 <v-row class="mt-2">
                     <v-col cols="4">
                         <v-autocomplete 
-                            v-model="collection.payment_type_id"
-                            label="Collection Method"
+                            v-model="payment.payment_type_id"
+                            label="Payment Method"
                             :items="payment_type_selection"
                             item-text="name"
                             item-value="id"
@@ -67,8 +67,8 @@
                             dense
                             >  
                         </v-autocomplete>
-                        <v-autocomplete cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id"
-                            v-model="collection.bank_id"
+                        <v-autocomplete cols="4" v-if="payment.payment_type_id != 2 && !!payment.payment_type_id"
+                            v-model="payment.bank_id"
                             label="Bank"
                             :items="[{name:'BDO',id:1},{name:'BPI',id:2}]"
                             item-text="name"
@@ -78,32 +78,32 @@
                             >  
                         </v-autocomplete>
                     </v-col>
-                    <v-col cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
+                    <v-col cols="4" v-if="payment.payment_type_id != 2 && !!payment.payment_type_id">
                         <v-text-field 
-                            v-model="collection.cheque_num"
-                            :disabled="collection.payment_type_id == 2"
-                            :background-color="collection.payment_type_id == 2 ? 'grey' : 'white' "
-                            :label="collection.payment_type_id == 1 ? 'Check Number' : 'Account Number' "
+                            v-model="payment.cheque_num"
+                            :disabled="payment.payment_type_id == 2"
+                            :background-color="payment.payment_type_id == 2 ? 'grey' : 'white' "
+                            :label="payment.payment_type_id == 1 ? 'Check Number' : 'Account Number' "
                             outlined
                             dense
                             >  
                         </v-text-field>
                     </v-col>
-                    <v-col cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id">
+                    <v-col cols="4" v-if="payment.payment_type_id != 2 && !!payment.payment_type_id">
                         <v-menu
                         ref="menu"
                         v-model="menu"
                         :close-on-content-click="false"
-                        :return-value.sync="collection.transaction_date"
-                        :disabled="collection.payment_type_id == 2"
+                        :return-value.sync="payment.transaction_date"
+                        :disabled="payment.payment_type_id == 2"
                         transition="scale-transition"
                         offset-y
                         min-width="auto"
                     >
                         <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                            v-model="collection.transaction_date"
-                            :disabled="collection.payment_type_id == 2"
+                            v-model="payment.transaction_date"
+                            :disabled="payment.payment_type_id == 2"
                             dense
                             outlined
                             label="Date"
@@ -114,7 +114,7 @@
                         ></v-text-field>
                         </template>
                         <v-date-picker
-                        v-model="collection.transaction_date"
+                        v-model="payment.transaction_date"
                         no-title
                         scrollable
                         >
@@ -129,7 +129,7 @@
                         <v-btn
                             text
                             color="primary"
-                            @click="$refs.menu.save(collection.transaction_date)"
+                            @click="$refs.menu.save(payment.transaction_date)"
                         >
                             OK
                         </v-btn>
@@ -141,7 +141,7 @@
                 <v-row class="mt-0">
                     <v-col cols="8">
                         <v-textarea 
-                            v-model="collection.remarks"
+                            v-model="payment.remarks"
                             label="Remarks"
                             outlined
                             dense
@@ -151,7 +151,7 @@
                     </v-col>
                     <v-col cols="4">
                         <v-text-field 
-                            v-model="collection.gross_amount"
+                            v-model="payment.gross_amount"
                             label="Amount"
                             outlined
                             dense
@@ -161,10 +161,10 @@
                     </v-col>
                 </v-row>
                 <v-row class="mt-2">
-                    <v-col cols="6" v-if="excessCollections.length > 0">
+                    <v-col cols="6" v-if="excessPayments.length > 0">
                         <v-data-table
                             :headers="headers"
-                            :items="excessCollections"
+                            :items="excessPayments"
                             dense
                         >
                         <template v-slot:[`item.remaining_amount`]="{ item }">
@@ -172,7 +172,7 @@
                         </template>
                         <template v-slot:[`item.action`]="{ item }">
                             <span>
-                                <v-btn :disabled="checkAllocations(item)" text icon fab small color="green" @click="allocateCollection(item)"><v-icon>mdi-cash-plus</v-icon></v-btn>
+                                <v-btn :disabled="checkAllocations(item)" text icon fab small color="green" @click="allocatePayment(item)"><v-icon>mdi-cash-plus</v-icon></v-btn>
                             </span>
                         </template>
                         </v-data-table>
@@ -182,15 +182,15 @@
                         <h3>Paid Amount: &#8369; {{thousandSeprator(selected_item.paid_amount)}}</h3> 
                         <h3>Balance Amount: &#8369; {{thousandSeprator(selected_item.balance_amount) }}</h3>
                         <br/>
-                        <h3>Collection: &#8369; {{thousandSeprator(collection_amount)  }}</h3>
-                        <h3>(Balance less Collection) : &#8369; {{thousandSeprator(totalAmount)}}</h3>
+                        <h3>Payment: &#8369; {{thousandSeprator(payment_amount)  }}</h3>
+                        <h3>(Balance less Payment) : &#8369; {{thousandSeprator(totalAmount)}}</h3>
                     </v-col>
                 </v-row>
                 <v-divider class="mt-2"></v-divider>              
                     <v-row class="mt-2"> 
                         <v-col class="text-right">
                             <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn>
-                            <v-btn small color="primary" @click="saveCollection()">Submit</v-btn>
+                            <v-btn small color="primary" @click="savePayment()">Submit</v-btn>
                         </v-col>
                     </v-row>
             </v-card-text>
@@ -210,13 +210,13 @@ export default {
         return {
             uploadDialog:false,
             menu:false,
-            invoice_selection:[],
-            collection:{
-                invoice_id:0,
+            purchase_selection:[],
+            payment:{
+                purchase_id:0,
                 payment_type_id:0,
                 gross_amount:0,
                 remaining_amount:0,
-                customer_id:0,
+                supplier_id:0,
                 payment_date:moment().format('YYYY-MM-DD'),
                 remarks:'',
                 cheque_num:null,
@@ -227,13 +227,13 @@ export default {
             showDialog:false,
             display_total_amount:'',
             payment_type_selection:[],
-            excessCollections:[],
+            excessPayments:[],
             headers:[
                 { text: 'Reference', value: 'reference_num',align:'left' },
                 { text: 'Remaining', value: 'remaining_amount',align:'right' },
                 { text: 'Action', value: 'action',align:'center' }
             ],
-            allocatedRemainingCollection:[],
+            allocatedRemainingPayment:[],
             file: {},
             fileSelected: false,
             showFileSelect: false,
@@ -242,7 +242,7 @@ export default {
     },
 
     mounted() {
-        this.getAllCollectionTypes();
+        this.getAllPaymentTypes();
     },
     methods: {
         uploadedData(data) {
@@ -266,19 +266,19 @@ export default {
             });
             return formatter.format(value);
         },
-        getAllCollectionTypes(){
+        getAllPaymentTypes(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-payment-types`).then(response=>{
                 this.payment_type_selection = response.data
             })
         },
-        saveCollection(){
+        savePayment(){
             const data = new FormData();
             const config = {
                 headers: {
                     "content-type": "multipart/form-data",
                 },
             };  
-            if (this.uploadedFiles == null && this.collection.payment_type_id != 2) {
+            if (this.uploadedFiles == null && this.payment.payment_type_id != 2) {
                 Swal
                     .fire({
                         title: "Please Upload Images or Files",
@@ -295,32 +295,32 @@ export default {
                     data.append("files[]", files[i]);
                 }
             }
-            data.append("collection", JSON.stringify(this.collection));
-            if (this.allocatedRemainingCollection.length > 0) {
-                for (var i = 0; i < _.compact(this.allocatedRemainingCollection).length; i++) {
-                    data.append('excess_collection[]', JSON.stringify(this.allocatedRemainingCollection[i]));
+            data.append("payment", JSON.stringify(this.payment));
+            if (this.allocatedRemainingPayment.length > 0) {
+                for (var i = 0; i < _.compact(this.allocatedRemainingPayment).length; i++) {
+                    data.append('excess_payment[]', JSON.stringify(this.allocatedRemainingPayment[i]));
                 }
             }
          
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-collection`,data,config).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-payment`,data,config).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.$emit('refreshData')
                 this.$emit('closeDialog')
                 this.resetFields();
             })
         },
-        getAllExcesCollections(){
+        getAllExcesPayments(){
             let payload = {
-                customer_id:this.selected_item.customer_id
+                supplier_id:this.selected_item.supplier_id
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-excess-collection`,payload).then(response=>{
-                this.excessCollections = response.data
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-excess-payment`,payload).then(response=>{
+                this.excessPayments = response.data
             })
         },
-        allocateCollection(item){
+        allocatePayment(item){
             Swal.fire({
                 icon: 'warning',
-                title: 'Are you sure you want to allocate the remaining amount of this collection?.',
+                title: 'Are you sure you want to allocate the remaining amount of this payment?.',
                 text: '',
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No',
@@ -329,7 +329,7 @@ export default {
             })
             .then((result) => {
                 if(result.isConfirmed){
-                    this.allocatedRemainingCollection.push(item)
+                    this.allocatedRemainingPayment.push(item)
                 }
             })
             .catch((error) => {
@@ -337,7 +337,7 @@ export default {
             });
         },
         checkAllocations(item){
-            if(this.allocatedRemainingCollection.includes(item)){
+            if(this.allocatedRemainingPayment.includes(item)){
                 return true
             }
             return false
@@ -357,9 +357,9 @@ export default {
             handler(val){
                 this.showDialog = val
                 this.display_total_amount = this.selected_item.total_amount
-                this.collection.invoice_id = this.selected_item.id
-                this.getAllExcesCollections();
-                this.getAllCollectionTypes();
+                this.payment.purchase_id = this.selected_item.id
+                this.getAllExcesPayments();
+                this.getAllPaymentTypes();
             }
         },
         selected_item:{
@@ -367,31 +367,31 @@ export default {
                 console.log(val)
             }
         },
-        allocatedRemainingCollection:{
+        allocatedRemainingPayment:{
             handler(val){
                 val.forEach(element => {
-                    this.collection.gross_amount = Number(this.collection.gross_amount) + Number(element.remaining_amount)
+                    this.payment.gross_amount = Number(this.payment.gross_amount) + Number(element.remaining_amount)
                 });
                 
             }
         },
-        collection_amount:{
+        payment_amount:{
             handler(val){
-                this.collection.collected_amount = Number(this.collection.collected_amount) + Number(val)
+                this.payment.collected_amount = Number(this.payment.collected_amount) + Number(val)
             }
         }
     },
     computed:{
         totalAmount(){
-            let total = Number (this.selected_item.balance_amount) - Number (this.collection_amount);      
+            let total = Number (this.selected_item.balance_amount) - Number (this.payment_amount);      
             if(total < 0){       
-                this.collection.remaining_amount = Math.abs(total)  
+                this.payment.remaining_amount = Math.abs(total)  
                 return 0
             } 
             return total
         },
-        collection_amount(){
-            return this.collection.gross_amount
+        payment_amount(){
+            return this.payment.gross_amount
         }
     },
     components:{

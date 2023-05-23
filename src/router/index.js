@@ -10,11 +10,14 @@ import SupplierComponent from '../views/modules/partners/SupplierComponent.vue'
 import SalesmanComponent from '../views/modules/partners/SalesmanComponent.vue'
 import AddInvoiceDialog from '../views/dialog/AddInvoiceDialog.vue'
 import InvoiceListComponent from '../views/modules/receivables/InvoiceListComponent.vue'
+import PurchaseListComponent from '../views/modules/receivables/PurchaseListComponent.vue'
 import UserListComponent from '../views/modules/system/UserListComponent.vue'
 import CollectionListComponent from '../views/modules/receivables/CollectionListComponent.vue'
 import AddCollectionDialog from '../views/dialog/AddCollectionDialog.vue'
 import PettyCashComponent from '../views/modules/payables/PettyCashComponent.vue'
 import QuotationListComponent from '../views/modules/receivables/QuotationListComponent.vue'
+import AddPurchaseDialog from '../views/dialog/AddPurchaseDialog.vue'
+import PaymentListComponent from '../views/modules/receivables/PaymentListComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -91,6 +94,22 @@ const routes = [
     name: 'quotation-list',
     component: QuotationListComponent,
     props: { dialog: true }
+  },
+  {
+    path: '/add-purchase',
+    name: 'add-purchase',
+    component: AddPurchaseDialog,
+    props: { dialog: true }
+  },
+  {
+    path: '/purchase-list',
+    name: 'purchase-list',
+    component: PurchaseListComponent,
+  },
+  {
+    path: '/payment-list',
+    name: 'payment-list',
+    component: PaymentListComponent,
   },
 ]
 

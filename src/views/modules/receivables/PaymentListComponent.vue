@@ -29,8 +29,8 @@
                             <template v-slot:expanded-item="{ headers, item }">
                                 <td :colspan="headers.length">
                                     <v-data-table
-                                    :headers="collection_header"
-                                    :items="item.collections"
+                                    :headers="payment_header"
+                                    :items="item.payments"
                                     :items-per-page="10"
                                     class="w-100"
                                     dense
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import AddCustomersDialog from '../../dialog/AddCustomersDialog.vue';
+import AddSuppliersDialog from '../../dialog/AddSuppliersDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -71,21 +71,21 @@ export default {
 
     data() {
         return {
-            customer_selection:[],
+            supplier_selection:[],
             salesman_selection:[],
             item_selection:[],
             items:[],
             headers:[
                 { text: 'Date', value: 'created_at' },
-                { text: 'Invoice #', value: 'invoice_num' },
-                { text: 'Customer', value: 'customer.company_name' },
-                { text: 'Salesman', value: 'salesman_text' },
+                { text: 'Purchase #', value: 'purchase_num' },
+                { text: 'Supplier', value: 'supplier.supplier_name' },
+                // { text: 'Salesman', value: 'salesman_text' },
                 { text: 'Balance Amount', value: 'balance_amount',align:'right' },
                 { text: 'Paid Amount', value: 'paid_amount',align:'right' },
                 { text: 'Total Amount', value: 'total_amount',align:'right' },
                 
             ],
-            collection_header:[
+            payment_header:[
                 { text: 'Reference #', value: 'reference_num' },
                 { text: 'Transaction #', value: 'cheque_num' },
                 { text: 'Transaction Date', value: 'transaction_date' },
@@ -105,7 +105,7 @@ export default {
             let payload = {
                 is_quotation:0
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-invoices`,payload).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 this.items = response.data
             })
         },
@@ -131,9 +131,9 @@ export default {
                             "content-type": "multipart/form-data",
                         },
                     };  
-                    data.append("collection", JSON.stringify(item));
+                    data.append("payment", JSON.stringify(item));
                     data.append("method",'approved');
-                    axios.post(`${process.env.VUE_APP_HOST_API}/api/save-collection`,data,config).then(response=>{
+                    axios.post(`${process.env.VUE_APP_HOST_API}/api/save-payment`,data,config).then(response=>{
                         Swal.fire(response.data,'','success');
                         this.getAll();
                         // this.$emit('refreshData')

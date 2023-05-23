@@ -48,6 +48,22 @@
                             > 
                         </v-autocomplete>
                     </v-col>
+                    <v-col>
+                        <v-autocomplete 
+                            v-model="customers.salesman_id" 
+                            dense 
+                            outlined 
+                            hide-details 
+                            label="Salesman" 
+                            :items="salesman_selection" 
+                            item-text="name"
+                            item-value="id"
+                            > 
+                        </v-autocomplete>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-text-field v-model="customers.credit_limit" dense outlined hide-details label="Credit Limit"> </v-text-field>
+                    </v-col>
                     <v-col cols="4">
                         <v-text-field v-model="customers.terms" dense outlined hide-details label="Terms"> </v-text-field>
                     </v-col>
@@ -107,14 +123,17 @@ data() {
             pricing_id:0,
             terms:'',
             payment_type_id:0,
+            salesman_id:0,
             contacts:[
                 {
                     contact_person: '',
                     contact_position:'',
                     contact_number:'',
                 }
-            ]
+            ],
+            credit_limit:0
         },
+        salesman_selection:[]
     };
 },
 props:['addDialog','payment_type_selection','pricing_selection','no_discount'],
@@ -125,6 +144,7 @@ watch:{
     addDialog:{
         handler(val){
             this.showDialog = val
+            this.getAllSalesman()
         }
     }
 },
@@ -159,7 +179,12 @@ methods: {
     },
     resetFields(){
         Object.assign(this.$data, this.$options.data.call(this));
-    }
+    },
+    getAllSalesman(){
+        axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-salesmans`).then(response=>{
+            this.salesman_selection = response.data
+        })
+    },
 
 },
 };
