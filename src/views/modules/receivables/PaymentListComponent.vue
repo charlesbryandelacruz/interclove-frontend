@@ -103,7 +103,7 @@ export default {
     methods: {
         getAll(){
             let payload = {
-                is_quotation:0
+                is_purchase_order:0
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 this.items = response.data
@@ -137,7 +137,7 @@ export default {
                         Swal.fire(response.data,'','success');
                         this.getAll();
                         // this.$emit('refreshData')
-                        // this.$emit('closeDialog')
+                        // this.$emit('closeAddInvoiceDialog')
                         // this.resetFields();
                     })
                 }

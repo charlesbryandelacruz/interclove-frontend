@@ -81,9 +81,8 @@ export default {
         {
           action: 'mdi-cash-register',
           items: [
-            { title: 'List of Quotation',link:'/quotation-list' },
+            { title: 'List of Quotation',link:'/quotation-list'},
             { title: 'List of Invoices',link:'/invoice-list' },
-            { title: 'Add Invoice',link:'/add-invoice' },
             { title: 'List of Collection',link:'/collection-list' },
           ],
           title: 'Receivables',
@@ -91,8 +90,8 @@ export default {
         {
           action: 'mdi-cash-multiple',
           items: [
+            { title: 'List of Purchase Orders',link:'/purchase-order-list' },
             { title: 'List of Purchases',link:'/purchase-list' },
-            { title: 'Add Purchase',link:'/add-purchase' },
             { title: 'List of Payments',link:'/payment-list' },
             { title: 'Expenses',link:'/' },
             { title: 'Petty Cash',link:'/petty-cash' },

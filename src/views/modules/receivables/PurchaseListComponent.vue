@@ -5,6 +5,17 @@
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
             <v-col class="text-left px-2 mt-2" cols="9">
+                <v-row class="text-left px-2 mt-1">
+                    <v-col class="text-left">
+                        <v-btn
+                            small
+                            color="primary" 
+                            @click="showAddEditPurchaseDialog">
+                                <v-icon>mdi-plus</v-icon>
+                                Add Purchase
+                        </v-btn>
+                    </v-col>
+                </v-row>
                 <v-card-title>
                     <v-row>
                         <v-col>Supplier Details</v-col>
@@ -17,6 +28,14 @@
                                 @click="showAddEditDialog">
                                     <v-icon>mdi-plus</v-icon>
                                     Add Payment
+                            </v-btn>
+                            <v-btn 
+                                v-if="selected_item.balance_amount == 0 && selected_item.status != 3"
+                                class="ml-2"
+                                small
+                                color="success" 
+                                @click="updateFreight()">
+                                    Update Freight
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -114,9 +133,9 @@
                                         <v-col class="text-center" >
                                             <h3>Unit Price</h3>
                                         </v-col>
-                                        <!-- <v-col class="text-center" >
-                                            <h3>UOM</h3>
-                                        </v-col> -->
+                                        <v-col class="text-center" v-if="selected_item.balance_amount == 0">
+                                            <h3>Freight</h3>
+                                        </v-col>
                                         <v-col class="text-center" >
                                             <h3>Total Price</h3>    
                                         </v-col>
@@ -136,14 +155,14 @@
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" reverse v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                            <v-text-field class="mx-1" readonly reverse v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" reverse v-model="item.unit_price" dense outlined hide-details background-color="grey" @blur="formatNumber(item.unit_price,i,'unit_price')"> </v-text-field>
+                                            <v-text-field class="mx-1" readonly reverse v-model="item.unit_price" dense outlined hide-details background-color="grey" @blur="formatNumber(item.unit_price,i,'unit_price')"> </v-text-field>
                                         </v-col>
-                                        <!-- <v-col class="pa-0 ma-0">
-                                            <v-text-field class="mx-1" reverse v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
-                                        </v-col> -->
+                                        <v-col class="pa-0 ma-0" v-if="selected_item.balance_amount == 0">
+                                            <v-text-field class="mx-1" :readonly="selected_item.status == 3" reverse v-model="item.freight_price" dense outlined hide-details @blur="computeAmount(i)"> </v-text-field>
+                                        </v-col>
                                         <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
                                         </v-col>
@@ -155,6 +174,7 @@
                             <v-spacer></v-spacer>
                             <v-col cols="3" class="text-right">
                                 <v-text-field 
+                                readonly
                                 reverse
                                 dense
                                 outlined
@@ -197,6 +217,7 @@
         </v-row>
         <AddPaymentDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddPaymentDialog>
         <BaseFileViewerComponentVue :show="fileDialog.show" :files="fileDialog.files" @closeFileViewer="closeFileViewer"></BaseFileViewerComponentVue>
+        <AddPurchaseDialogVue :dialog="addPurchaseDialog" @closeAddPurchaseDialog="closeAddPurchaseDialog" @refreshTable="getAll"></AddPurchaseDialogVue>
     </v-app>
   
 </template>
@@ -206,6 +227,7 @@ import AddPaymentDialog from '../../dialog/AddPaymentDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import ShareFunctionsComponentVue from '@/views/main/ShareFunctionsComponent.vue';
 import BaseFileViewerComponentVue from '@/views/main/BaseFileViewerComponent.vue';
+import AddPurchaseDialogVue from '@/views/dialog/AddPurchaseDialog.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
@@ -235,6 +257,7 @@ export default {
                         unit_price:0,
                         uom:'',
                         total_price:0,
+                        freight_price:0
                     }
                 ],
                 total_amount:0,
@@ -242,7 +265,9 @@ export default {
                 paid_amount:0,
                 id:0,
                 size:'',
-                payments:[]
+                payments:[],
+                status:'',
+                
             },
             addDialog:false,
             items:[],
@@ -259,7 +284,8 @@ export default {
             fileDialog:{
                 show:false,
                 files:[]
-            }
+            },
+            addPurchaseDialog:false
         };
     },
 
@@ -304,7 +330,7 @@ export default {
             this.selected_item.purchase_items[i].unit_price = item.item_prices.si_price;
         },
         computeAmount(i){
-            let total_price = this.selected_item.purchase_items[i].unit_price * this.selected_item.purchase_items[i].quantity
+            let total_price = Number(Number(this.selected_item.purchase_items[i].unit_price.replaceAll(",", "")) * Number(this.selected_item.purchase_items[i].quantity) + Number(this.selected_item.purchase_items[i].freight_price))
             this.selected_item.purchase_items[i].total_price = this.thousandSeprator(total_price)
         },
         addLine(){
@@ -321,7 +347,7 @@ export default {
         },
         getAll(){
             let payload = {
-                is_quotation:0
+                is_purchase_order:0
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 this.items = response.data
@@ -338,12 +364,29 @@ export default {
                 show:false,
                 files:[]
             }
-        }
+        },
+        closeAddPurchaseDialog(){
+            this.addPurchaseDialog = false
+        },
+        showAddEditPurchaseDialog(){
+            this.addPurchaseDialog = true
+        },
+        updateFreight(){
+            let payload = {
+                purchase_items:this.selected_item.purchase_items,
+                id:this.selected_item.id
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/update-freight`,payload).then(response=>{
+                Swal.fire(response.data,'','success');
+                this.getAll();
+            })
+        },
     },
     components:{
         AddPaymentDialog,
         ListComponentVue,
-        BaseFileViewerComponentVue
+        BaseFileViewerComponentVue,
+        AddPurchaseDialogVue
     },
     watch:{
         'selected_item.purchase_items' : function(newVal, oldVal) { 

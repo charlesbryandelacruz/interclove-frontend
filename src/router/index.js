@@ -18,6 +18,7 @@ import PettyCashComponent from '../views/modules/payables/PettyCashComponent.vue
 import QuotationListComponent from '../views/modules/receivables/QuotationListComponent.vue'
 import AddPurchaseDialog from '../views/dialog/AddPurchaseDialog.vue'
 import PaymentListComponent from '../views/modules/receivables/PaymentListComponent.vue'
+import PurchaseOrderListComponent from '../views/modules/receivables/PurchaseOrderListComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -110,6 +111,11 @@ const routes = [
     path: '/payment-list',
     name: 'payment-list',
     component: PaymentListComponent,
+  },
+  {
+    path: '/purchase-order-list',
+    name: 'purchase-order-list',
+    component: PurchaseOrderListComponent,
   },
 ]
 

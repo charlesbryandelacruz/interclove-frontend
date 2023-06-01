@@ -24,10 +24,17 @@
                             <v-autocomplete v-model="items.uom" dense outlined hide-details label="UOM" :items="unit_of_measures"> </v-autocomplete>
                         </v-col>
                         <v-col cols="4">
-                            <v-autocomplete v-model="items.size" dense outlined hide-details label="Item Size" :items="item_sizes"> </v-autocomplete>
+                            <v-text-field v-model="items.size" dense outlined hide-details label="Item Size"> </v-text-field>
                         </v-col>
                         <v-col cols="8">
                             <v-textarea v-model="items.description" dense outlined hide-details label="Description"> </v-textarea>
+                        </v-col>
+                        <v-divider></v-divider>
+                        <v-col cols="4">
+                            <v-text-field v-model="items.initial_stocks" dense outlined hide-details label="Initial Stocks"> </v-text-field>
+                        </v-col>
+                        <v-col cols="4">
+                            <v-text-field v-model="items.dr_price" dense outlined hide-details label="DR Price"> </v-text-field>
                         </v-col>
                     </v-row>
                     <v-divider class="mt-2"></v-divider>              
@@ -65,12 +72,9 @@ export default {
                 uom:'',
                 description:'',
                 size:'',
+                dr_price:0,
+                initial_stocks:0,
             },
-            item_sizes:[
-                {text:'SMALL',value:'SMALL'},
-                {text:'MEDIUM',value:'MEDIUM'},
-                {text:'LARGE',value:'LARGE'},
-            ],
         };
     },
     props:['addDialog'],

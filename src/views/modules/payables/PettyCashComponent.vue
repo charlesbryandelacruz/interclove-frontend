@@ -5,21 +5,23 @@
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
             <v-col class="text-left px-2 mt-2" cols="9">
+                <v-row>
+                    <v-col class="text-left">
+                        <v-btn 
+                            v-if="isDisabled"
+                            small
+                            class="mr-2" 
+                            color="primary" 
+                            @click="showAddEditDialogPettyCash">
+                                <v-icon>mdi-plus</v-icon>
+                                Add New Petty Cash
+                        </v-btn>
+                    </v-col>
+                </v-row>
                     <v-card-title>
                         <v-row>
                             <v-col>Petty Cash Details</v-col>
                             <v-spacer></v-spacer>
-                            <v-col class="text-right">
-                                <v-btn 
-                                    v-if="isDisabled"
-                                    small
-                                    class="mr-2" 
-                                    color="primary" 
-                                    @click="showAddEditDialogPettyCash">
-                                        <v-icon>mdi-plus</v-icon>
-                                        Add New Petty Cash
-                                </v-btn>
-                            </v-col>
                             <v-col class="text-right">
                                 <v-btn 
                                     v-if="isDisabled"
@@ -29,16 +31,14 @@
                                         <v-icon>mdi-plus</v-icon>
                                         Add Transaction
                                 </v-btn>
-                            </v-col>
-                            <v-col class="text-right">
                                 <v-btn 
                                 v-if="isDisabled"
                                 small
-                                color="orange" 
+                                color="green" 
                                 @click="showFundsAddEditDialog">
                                     <v-icon>mdi-plus</v-icon>
                                     Add More Funds
-                            </v-btn>
+                                </v-btn>
                             </v-col>
                         </v-row>
         

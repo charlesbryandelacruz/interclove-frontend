@@ -5,6 +5,17 @@
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
             <v-col class="text-left px-2 mt-2" cols="9">
+                <v-row class="text-left px-2 mt-1">
+                    <v-col class="text-left">
+                        <v-btn
+                            small
+                            color="primary" 
+                            @click="showAddEditInvoiceDialog">
+                                <v-icon>mdi-plus</v-icon>
+                                Add Invoice
+                        </v-btn>
+                    </v-col>
+                </v-row>
                 <v-card-title>
                     <v-row>
                         <v-col>Customer Details</v-col>
@@ -115,6 +126,9 @@
                                             <h3>Unit Price</h3>
                                         </v-col>
                                         <v-col class="text-center" >
+                                            <h3>Discount Price</h3>
+                                        </v-col>
+                                        <v-col class="text-center" >
                                             <h3>UOM</h3>
                                         </v-col>
                                         <v-col class="text-center" >
@@ -140,6 +154,9 @@
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.unit_price" dense outlined hide-details background-color="grey" @blur="formatNumber(item.unit_price,i,'unit_price')"> </v-text-field>
+                                        </v-col>
+                                        <v-col class="pa-0 ma-0">
+                                            <v-text-field class="mx-1" reverse v-model="item.discount_price" dense outlined hide-details background-color="grey" @blur="formatNumber(item.unit_price,i,'discount_price')"> </v-text-field>
                                         </v-col>
                                         <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
@@ -197,6 +214,7 @@
         </v-row>
         <AddCollectionDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddCollectionDialog>
         <BaseFileViewerComponentVue :show="fileDialog.show" :files="fileDialog.files" @closeFileViewer="closeFileViewer"></BaseFileViewerComponentVue>
+        <AddInvoiceDialogVue :dialog="addInvoiceDialog" @closeAddInvoiceDialog="closeAddInvoiceDialog" @refreshTable="getAll"></AddInvoiceDialogVue>
     </v-app>
   
 </template>
@@ -207,6 +225,7 @@ import ListComponentVue from '@/views/main/ListComponent.vue';
 import ShareFunctionsComponentVue from '@/views/main/ShareFunctionsComponent.vue';
 import BaseFileViewerComponentVue from '@/views/main/BaseFileViewerComponent.vue';
 import axios from 'axios';
+import AddInvoiceDialogVue from '@/views/dialog/AddInvoiceDialog.vue';
 import Swal from 'sweetalert2';
 import moment from 'moment'
 export default {
@@ -235,6 +254,7 @@ export default {
                         unit_price:0,
                         uom:'',
                         total_price:0,
+                        discount_price:0
                     }
                 ],
                 total_amount:0,
@@ -259,7 +279,8 @@ export default {
             fileDialog:{
                 show:false,
                 files:[]
-            }
+            },
+            addInvoiceDialog:false
         };
     },
 
@@ -282,6 +303,9 @@ export default {
         },
         showAddEditDialog(){
             this.addDialog = true
+        },
+        showAddEditInvoiceDialog(){
+            this.addInvoiceDialog = true
         },
         getAllCustomers(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-customers`).then(response=>{
@@ -338,18 +362,23 @@ export default {
                 show:false,
                 files:[]
             }
+        },
+        closeAddInvoiceDialog(){
+            this.addInvoiceDialog = false
         }
     },
     components:{
         AddCollectionDialog,
         ListComponentVue,
-        BaseFileViewerComponentVue
+        BaseFileViewerComponentVue,
+        AddInvoiceDialogVue
     },
     watch:{
         'selected_item.invoice_items' : function(newVal, oldVal) { 
             newVal.forEach(e=>{
                 e.total_price = this.thousandSeprator(e.total_price)
                 e.unit_price = this.thousandSeprator(e.unit_price)
+                e.discount_price = this.thousandSeprator(e.discount_price)
             })
         },
         'selected_item.total_amount' :function(newVal, oldVal) {  

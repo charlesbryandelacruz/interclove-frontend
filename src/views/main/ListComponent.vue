@@ -1,8 +1,7 @@
 <template>
     <v-card
-        height="729px"
+        max-height="100vh"
         class="mr-0 pr-0"
-        style="overflow:auto"
         ripple
     >   
         <div v-if="loading">

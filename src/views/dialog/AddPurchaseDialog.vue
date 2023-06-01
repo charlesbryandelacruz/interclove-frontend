@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="100%">
-    <AddCustomersDialog  @getCustomers="getAllCustomers" :no_discount="true" :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddCustomersDialog>
+    <!-- <AddSuppliersDialog  @getSuppliers="getAllSuppliers" :no_discount="true" :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddSuppliersDialog> -->
 
         <v-card>
             <v-card-title>
@@ -17,25 +17,25 @@
                 <v-row>
                     <v-col cols="5">
                         <v-row>
-                            <!-- <v-col>
-                                <v-btn color="green" width="100%" @click="showAllQuotations()">Extract From Quotation</v-btn>
-                            </v-col> -->
-                            <!-- <v-col>
+                            <v-col>
+                                <v-btn color="green" width="100%" @click="showAllPurchaseOrders()">Extract From Purchase Order</v-btn>
+                            </v-col>
+                            <v-col>
                                 <v-autocomplete 
-                                    v-if="from_quotation"
-                                    v-model="quotation" 
+                                    v-if="from_purchase_order"
+                                    v-model="purchase_order" 
                                     dense 
                                     outlined 
                                     hide-details 
-                                    label="Quotations" 
-                                    :items="quotation_selection" 
+                                    label="PurchaseOrders" 
+                                    :items="purchase_order_selection" 
                                     item-text="q_name"
                                     item-value="id"
                                     return-object
-                                    @change="getQuotationDetails()"
+                                    @change="getPurchaseOrderDetails()"
                                     > 
                                 </v-autocomplete>
-                            </v-col> -->
+                            </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="8">
@@ -44,7 +44,7 @@
                                     dense 
                                     outlined 
                                     hide-details 
-                                    label="Customer" 
+                                    label="Supplier" 
                                     :items="supplier_selection" 
                                     item-text="name"
                                     item-value="id"
@@ -82,7 +82,7 @@
                                 <v-text-field readonly v-model="purchase.purchase_date" dense outlined hide-details label="Purchase Date"> </v-text-field>
                             </v-col>
                             <v-col>
-                                <v-autocomplete 
+                                <!-- <v-autocomplete 
                                     disabled
                                     v-model="purchase.salesman_id" 
                                     dense 
@@ -93,7 +93,7 @@
                                     item-text="name"
                                     item-value="id"
                                     @change="getAddress()"> 
-                                </v-autocomplete>
+                                </v-autocomplete> -->
                             </v-col>
                         </v-row>
                         <v-row>
@@ -131,14 +131,14 @@
                                 <v-col class="text-center" >
                                     <h3>Unit Price</h3>
                                 </v-col>
-                                <v-col class="text-center" >
+                                <!-- <v-col class="text-center" >
                                     <h3>UOM</h3>
-                                </v-col>
+                                </v-col> -->
                                 <v-col class="text-center" >
                                     <h3>Total Price</h3>    
                                 </v-col>
                             </v-row>
-                            <v-row  v-for="(item,i) in purchase.purchase_items" :key="i" class="ma-1 pa-0">
+                            <v-row  v-for="(item,i) in purchase.purchase_items" :key="i" class="ma-1 pa-0" :style="!!item.hasError ? 'background-color:orange': '' ">
                                 <v-col class="pa-0 ma-0">
                                     <v-autocomplete 
                                         placeholder="Item" v-model="item.item_id" 
@@ -152,14 +152,14 @@
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i,item.current_stock)"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" dense outlined hide-details @blur="computeAmount(i)"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" dense outlined hide-details @blur="computeAmount(i,item.current_stock)"> </v-text-field>
                                 </v-col>
-                                <v-col class="pa-0 ma-0">
+                                <!-- <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="UOM" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
-                                </v-col>
+                                </v-col> -->
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="Total Price" v-model="item.total_price" readonly dense outlined hide-details> </v-text-field>
                                 </v-col>
@@ -176,24 +176,27 @@
                 <v-divider class="mt-2"></v-divider>              
                     <v-row class="mt-2"> 
                         <v-col class="text-right">
-                            <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn>
-                            <v-btn :disabled="from_quotation" small color="green" @click="savePurchase(true)" class="mr-2">Save as Quotation</v-btn>
-                            <v-btn small color="primary" @click="savePurchase(false)">Submit</v-btn>
-                            
+                            <v-btn :disabled="from_purchase_order" small color="green" @click="savePurchase(true)" class="mr-2">Save as Purchase Order</v-btn>
+                            <v-btn small color="primary" @click="savePurchase(false)" :disabled="outOfStocks != 0">Print and Submit</v-btn>
+                            <!-- <PrintPurchaseComponentVue :purchase="purchase" :print_purchase="print_purchase" :totalAmount="totalAmount" @resetPrint="resetPrint"></PrintPurchaseComponentVue>  -->
                         </v-col>
                     </v-row>
             </v-card-text>
         </v-card>
     </v-dialog>
-
+    
+    
 </template>
 
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment'
-import AddCustomersDialog from './AddCustomersDialog.vue'; 
+import AddSuppliersDialog from './AddSuppliersDialog.vue'; 
 import ShareFunctionsComponent from '../main/ShareFunctionsComponent.vue';
+// import PrintPurchaseComponentVue from '../prints/PrintPurchaseComponent.vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 export default {
     mixins: [ShareFunctionsComponent],
     data() {
@@ -201,8 +204,8 @@ export default {
             supplier_selection:[],
             salesman_selection:[],
             item_selection:[],
-            quotation_selection:[],
-            quotation:'',
+            purchase_order_selection:[],
+            purchase_order:'',
             purchase:{
                 supplier_object:'',
                 purchase_num:'',
@@ -211,8 +214,8 @@ export default {
                 purchase_date:moment().format('YYYY-MM-DD'),
                 terms:'',
                 remarks:'',
-                salesman_id:0,
-                is_quotation:0,
+                salesman_id:1,
+                is_purchase_order:0,
                 purchase_items:[
                     {
                         item_id:0,
@@ -220,11 +223,14 @@ export default {
                         unit_price:0,
                         uom:'',
                         total_price:0,
+                        item_name:null,
+                        current_stock:0,
+                        hasError:false
                     }
                 ],
                 id:0
             },
-            from_quotation:false,
+            from_purchase_order:false,
             addDialog:false,
             pricing_selection:[
                 {
@@ -237,14 +243,16 @@ export default {
                     name:"CASH",
                     id:9999
                 }
-            ]
+            ],
+            print_purchase:false,
+            outOfStocks:0
         };
     },
 
     mounted() {
         this.getAllSalesman()
         this.getPurchaseNum()
-        this.getAllCustomers()
+        this.getAllSuppliers()
         this.getAllItems()
         
     },
@@ -259,9 +267,10 @@ export default {
     },
     methods: {
         closeDialog(){
-            this.$router.push({name:'purchase-list'})
+            this.$emit('closeAddPurchaseDialog')
+            this.$emit('refreshTable')
         },
-        getAllCustomers(){
+        getAllSuppliers(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-suppliers`).then(response=>{
                 this.supplier_selection = response.data
             })
@@ -279,10 +288,35 @@ export default {
         },
         getItemDetails(i){
             let item = _.find(this.item_selection, ['id', this.purchase.purchase_items[i].item_id])
+            
             this.purchase.purchase_items[i].uom = item.uom;
-            this.purchase.purchase_items[i].unit_price = this.thousandSeprator(item.item_prices.si_price);
+            this.purchase.purchase_items[i].item_name = item.name;
+            this.purchase.purchase_items[i].unit_price = item.dr_price
+            this.purchase.purchase_items[i].current_stock = item.current_stock
+
+            // if(item.current_stock <= 0){
+            //     this.outOfStocks++
+            //     this.purchase.purchase_items[i].hasError = true
+            // }
+            // else{
+            //     this.outOfStocks--
+            //     if(this.outOfStocks <= 0){
+            //         this.outOfStocks = 0
+            //     }  
+            // }
         },
-        computeAmount(i){
+        computeAmount(i,current_stock){
+            // this.purchase.purchase_items[i].hasError = false
+            // if(current_stock < this.purchase.purchase_items[i].quantity){
+            //     this.outOfStocks++
+            //     this.purchase.purchase_items[i].hasError = true
+            // }
+            // else{
+            //     this.outOfStocks--
+            //     if(this.outOfStocks <= 0){
+            //         this.outOfStocks = 0
+            //     }   
+            // }
             let total_price = this.purchase.purchase_items[i].unit_price.replaceAll(",", "") * this.purchase.purchase_items[i].quantity
             this.purchase.purchase_items[i].total_price = this.thousandSeprator(total_price)
         },
@@ -298,17 +332,18 @@ export default {
         removeLine(){
             this.purchase.purchase_items.pop()
         },
-        savePurchase(is_quotation){
+        async savePurchase(is_purchase_order){
             Object.assign(this.purchase,{total_amount:this.totalAmount})
             let payload = {
                 purchase:this.purchase,
-                from_quotation:this.from_quotation
+                from_purchase_order:this.from_purchase_order
             }
-            if(is_quotation){
-                this.purchase.is_quotation = 1
+            if(is_purchase_order){
+                this.purchase.is_purchase_order = 1
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-purchase`,payload).then(response=>{
+            await axios.post(`${process.env.VUE_APP_HOST_API}/api/save-purchase`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
+                this.print_purchase = true
                 this.closeDialog()
             })
             
@@ -323,23 +358,23 @@ export default {
                 this.salesman_selection = response.data
             })
         },
-        getQuotationDetails(){
-            this.quotation.purchase_num = this.purchase.purchase_num
-            this.purchase = this.quotation
+        getPurchaseOrderDetails(){
+            this.purchase_order.purchase_num = this.purchase.purchase_num
+            this.purchase = this.purchase_order
             let c = this.supplier_selection.filter(e=>{
                 if(e.id == this.purchase.supplier_id) return e
             }) 
             this.purchase.supplier_object = c[0]
         },
-        showAllQuotations(){
-            this.from_quotation = true
+        showAllPurchaseOrders(){
+            this.from_purchase_order = true
             let payload = {
-                is_quotation:1,
+                is_purchase_order:1,
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
-                this.quotation_selection = response.data
-                if(this.quotation_selection.length == 0){
-                    this.from_quotation = false
+                this.purchase_order_selection = response.data
+                if(this.purchase_order_selection.length == 0){
+                    this.from_purchase_order = false
                 }
             })
         },
@@ -349,11 +384,14 @@ export default {
         showAddEditDialog(){
             this.addDialog = true
         },
-        
+        resetPrint(){
+            this.print_purchase = false
+        }
     },
     props:['dialog'],
     components:{
-        AddCustomersDialog
+        AddSuppliersDialog,
+        // PrintPurchaseComponentVue
     }
 };
 </script>

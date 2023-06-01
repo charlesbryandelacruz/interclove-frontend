@@ -271,7 +271,7 @@ export default {
             }
         },
         getAllPricing(){
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-pricing`).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-discounts`).then(response=>{
                 this.pricing_selection = response.data
             })
         },

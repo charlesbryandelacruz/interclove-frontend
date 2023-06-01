@@ -67,7 +67,7 @@
                                 <v-autocomplete   :readonly="isDisabled"  v-model="selected_item.uom" dense outlined hide-details label="UOM" :items="unit_of_measures"> </v-autocomplete>
                             </v-col>
                             <v-col cols="4">
-                                <v-autocomplete   :readonly="isDisabled"  v-model="selected_item.size" dense outlined hide-details label="Item Size" :items="item_sizes"> </v-autocomplete>
+                                <v-text-field   :readonly="isDisabled"  v-model="selected_item.size" dense outlined hide-details label="Item Size" :items="item_sizes"> </v-text-field>
                             </v-col>
                             <v-col cols="8">
                                 <v-textarea 
@@ -85,6 +85,7 @@
                         <v-row>
                             <v-col cols="2">
                                 <v-text-field 
+                                v-model="selected_item.current_stock"
                                 outlined
                                 dense
                                 hide-details
@@ -95,14 +96,13 @@
                             </v-col>
                             <v-col cols="2">
                                 <v-text-field
-                                v-model="selected_item.item_prices.total_cost" 
+                                v-model="selected_item.dr_price" 
                                 outlined
                                 dense
                                 hide-details
                                 reverse
                                 label="Price Bought"
                                 readonly>
-
                                 </v-text-field>
                             </v-col>
                         </v-row>
@@ -135,7 +135,8 @@ export default {
                 uom:'',
                 description:'',
                 id:'',
-                item_prices:[]
+                item_prices:[],
+                current_stock:0
             },
             isDisabled:true,
             unit_of_measures:[

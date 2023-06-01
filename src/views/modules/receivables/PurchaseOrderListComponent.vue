@@ -7,7 +7,7 @@
             <v-col class="text-left px-2 mt-2" cols="9">
                 <v-card-title>
                     <v-row>
-                        <v-col>Customer Details</v-col>
+                        <v-col>Supplier Details</v-col>
                         <v-spacer></v-spacer>
                         <v-col class="text-right">
                             <v-btn 
@@ -23,7 +23,7 @@
                                 small
                                 class="mr-2" 
                                 :color="!!isDisabled ? 'secondary' : 'green'" 
-                                @click="editInvoice(); isDisabled = !isDisabled"
+                                @click="editPurchase(); isDisabled = !isDisabled"
                             >
                                 {{ !!isDisabled ? 'Edit' : 'Save'}}
                             </v-btn>
@@ -37,12 +37,12 @@
                                     <v-col>
                                         <v-autocomplete 
                                             :readonly="isDisabled"
-                                            v-model="selected_item.customer_id" 
+                                            v-model="selected_item.supplier_id" 
                                             dense 
                                             outlined 
                                             hide-details 
-                                            label="Customer" 
-                                            :items="customer_selection" 
+                                            label="Supplier" 
+                                            :items="supplier_selection" 
                                             item-text="name"
                                             item-value="id"
                                             return-object
@@ -59,29 +59,29 @@
                             <v-col cols="4">
                                 <v-row>
                                     <v-col cols="6">
-                                        <v-text-field v-model="selected_item.invoice_num" :readonly="isDisabled" dense outlined hide-details label="Invoice #"> </v-text-field>
+                                        <v-text-field v-model="selected_item.purchase_num" :readonly="isDisabled" dense outlined hide-details label="Purchase #"> </v-text-field>
                                     </v-col>
                                     <v-col cols="6">
-                                        <v-text-field v-model="selected_item.terms" :readonly="isDisabled" dense outlined hide-details label="Terms"> </v-text-field>
+                                        <!-- <v-text-field v-model="selected_item.terms" :readonly="isDisabled" dense outlined hide-details label="Terms"> </v-text-field> -->
                                     </v-col>
                                 </v-row>
                                 <v-row>
                                     <v-col>
-                                        <v-text-field :readonly="isDisabled" v-model="selected_item.invoice_date" dense outlined hide-details label="Invoice Date"> </v-text-field>
+                                        <v-text-field :readonly="isDisabled" v-model="selected_item.purchase_date" dense outlined hide-details label="Purchase Date"> </v-text-field>
                                     </v-col>
                                     <v-col>
-                                        <v-autocomplete 
+                                        <!-- <v-autocomplete 
                                             :readonly="isDisabled"
                                             v-model="selected_item.salesman_id" 
                                             dense 
                                             outlined 
                                             hide-details 
                                             label="Salesman" 
-                                            :items="customer_selection" 
+                                            :items="supplier_selection" 
                                             item-text="name"
                                             item-value="id"
                                             @change="getAddress()"> 
-                                        </v-autocomplete>
+                                        </v-autocomplete> -->
                                     </v-col>
                                 </v-row>
                                 <v-row>
@@ -119,7 +119,7 @@
                                         </h5> 
                                     </v-card-title>
                                     <v-divider class="mb-2"></v-divider>
-                                    <v-row  v-for="(item,i) in selected_item.invoice_items" :key="i" class="ma-1 pa-0">
+                                    <v-row  v-for="(item,i) in selected_item.purchase_items" :key="i" class="ma-1 pa-0">
                                         <v-col class="pa-0 ma-0">
                                             <v-autocomplete 
                                                 :readonly="isDisabled"
@@ -140,9 +140,9 @@
                                         <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.unit_price" :readonly="isDisabled" dense outlined hide-details label="Unit Price" background-color="grey"> </v-text-field>
                                         </v-col>
-                                        <v-col class="pa-0 ma-0">
+                                        <!-- <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.uom" :readonly="isDisabled" dense outlined hide-details label="Unit" background-color="grey"> </v-text-field>
-                                        </v-col>
+                                        </v-col> -->
                                         <v-col class="pa-0 ma-0">
                                             <v-text-field class="mx-1" reverse v-model="item.total_price" :readonly="isDisabled" dense outlined hide-details label="Total Price"> </v-text-field>
                                         </v-col>
@@ -166,13 +166,13 @@
                     </v-card-text>
             </v-col>
         </v-row>
-        <!-- <AddCustomersDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddCustomersDialog> -->
+        <!-- <AddSuppliersDialog :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()" :pricing_selection="pricing_selection" :payment_type_selection="payment_type_selection"></AddSuppliersDialog> -->
     </v-app>
   
 </template>
 
 <script>
-import AddCustomersDialog from '../../dialog/AddCustomersDialog.vue';
+import AddSuppliersDialog from '../../dialog/AddSuppliersDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -184,20 +184,20 @@ export default {
     data() {
         return {
             items:[],
-            customer_selection:[],
+            supplier_selection:[],
             salesman_selection:[],
             item_selection:[],
             selected_item:{
-                customer_object:'',
-                invoice_num:'',
+                supplier_object:'',
+                purchase_num:'',
                 address:'',
-                customer_id:'',
-                invoice_date:moment().format('YYYY-MM-DD'),
+                supplier_id:'',
+                purchase_date:moment().format('YYYY-MM-DD'),
                 terms:'',
                 remarks:'',
                 salesman_id:1,
-                is_quotation:0,
-                invoice_items:[
+                is_purchase_order:0,
+                purchase_items:[
                     {
                         item_id:0,
                         quantity:0,
@@ -217,7 +217,7 @@ export default {
 
     mounted() {
         this.getAll();
-        this.getAllCustomers()
+        this.getAllSuppliers()
         this.getAllItems()
     },
     methods: {
@@ -230,15 +230,15 @@ export default {
         showAddEditDialog(){
             this.addDialog = true
         },
-        getAllCustomers(){
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-customers`).then(response=>{
-                this.customer_selection = response.data
+        getAllSuppliers(){
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-suppliers`).then(response=>{
+                this.supplier_selection = response.data
             })
         },
         getAddress(){
-            this.selected_item.address = this.selected_item.customer_object.address;
-            this.selected_item.customer_id = this.selected_item.customer_object.id;
-            this.selected_item.terms = this.selected_item.customer_object.terms;
+            this.selected_item.address = this.selected_item.supplier_object.address;
+            this.selected_item.supplier_id = this.selected_item.supplier_object.id;
+            this.selected_item.terms = this.selected_item.supplier_object.terms;
         },
         getAllItems(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
@@ -246,16 +246,16 @@ export default {
             })
         },
         getItemDetails(i){
-            let item = _.find(this.item_selection, ['id', this.selected_item.invoice_items[i].item_id])
-            this.selected_item.invoice_items[i].uom = item.uom;
-            this.selected_item.invoice_items[i].unit_price = item.item_prices.si_price;
+            let item = _.find(this.item_selection, ['id', this.selected_item.purchase_items[i].item_id])
+            // this.selected_item.purchase_items[i].uom = item.uom;
+            this.selected_item.purchase_items[i].unit_price = item.item_prices.si_price;
         },
         computeAmount(i){
-            let total_price = this.selected_item.invoice_items[i].unit_price * this.selected_item.invoice_items[i].quantity
-            this.selected_item.invoice_items[i].total_price = total_price
+            let total_price = this.selected_item.purchase_items[i].unit_price * this.selected_item.purchase_items[i].quantity
+            this.selected_item.purchase_items[i].total_price = total_price
         },
         addLine(){
-            this.selected_item.invoice_items.push({
+            this.selected_item.purchase_items.push({
                 item_id:0,
                 quantity:0,
                 unit_price:0,
@@ -264,26 +264,26 @@ export default {
             })
         },
         removeLine(){
-            this.selected_item.invoice_items.pop()
+            this.selected_item.purchase_items.pop()
         },
         getAll(){
             let payload = {
-                is_quotation:1,
+                is_purchase_order:1,
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-invoices`,payload).then(response=>{
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 response.data.forEach(e=>{
                     e.name = e.q_name
                 })
                 this.items = response.data
             })
         },
-        editInvoice(is_quotation){
+        editPurchase(is_purchase_order){
             if(!this.isDisabled){
                 Object.assign(this.selected_item,{total_amount:this.totalAmount})
                 let payload = {
-                    invoice:this.selected_item,
+                    purchase:this.selected_item,
                 }
-                axios.post(`${process.env.VUE_APP_HOST_API}/api/update-invoice`,payload).then(response=>{
+                axios.post(`${process.env.VUE_APP_HOST_API}/api/update-purchase`,payload).then(response=>{
                     Swal.fire(response.data,'','success');
                     this.closeDialog()
                 })
@@ -293,11 +293,11 @@ export default {
         
     },
     components:{
-        AddCustomersDialog,
+        AddSuppliersDialog,
         ListComponentVue
     },
     watch:{
-        'selected_item.invoice_items' : function(newVal, oldVal) { 
+        'selected_item.purchase_items' : function(newVal, oldVal) { 
             newVal.forEach(e=>{
                 e.total_price = this.thousandSeprator(e.total_price)
                 e.unit_price = this.thousandSeprator(e.unit_price)
@@ -309,7 +309,7 @@ export default {
     },
     computed:{
         totalAmount(){
-            let container = this.selected_item.invoice_items
+            let container = this.selected_item.purchase_items
             container.forEach(e=>{
                 e.total_price = Number (String (e.total_price).replaceAll(/,/g, ""))
             })

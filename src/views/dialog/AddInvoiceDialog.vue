@@ -132,13 +132,16 @@
                                     <h3>Unit Price</h3>
                                 </v-col>
                                 <v-col class="text-center" >
+                                    <h3>Discount Price</h3>
+                                </v-col>
+                                <v-col class="text-center" >
                                     <h3>UOM</h3>
                                 </v-col>
                                 <v-col class="text-center" >
                                     <h3>Total Price</h3>    
                                 </v-col>
                             </v-row>
-                            <v-row  v-for="(item,i) in invoice.invoice_items" :key="i" class="ma-1 pa-0">
+                            <v-row  v-for="(item,i) in invoice.invoice_items" :key="i" class="ma-1 pa-0" :style="!!item.hasError ? 'background-color:orange': '' ">
                                 <v-col class="pa-0 ma-0">
                                     <v-autocomplete 
                                         placeholder="Item" v-model="item.item_id" 
@@ -152,10 +155,13 @@
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
-                                    <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i)"> </v-text-field>
+                                    <v-text-field class="mx-1" reverse placeholder="Quantity" v-model="item.quantity" dense outlined hide-details type="number" @blur="computeAmount(i,item.current_stock)"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="Unit Price" v-model="item.unit_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
+                                </v-col>
+                                <v-col class="pa-0 ma-0">
+                                    <v-text-field class="mx-1" reverse placeholder="Discount Price" v-model="item.discount_price" readonly dense outlined hide-details background-color="grey"> </v-text-field>
                                 </v-col>
                                 <v-col class="pa-0 ma-0">
                                     <v-text-field class="mx-1" reverse placeholder="UOM" v-model="item.uom" readonly dense outlined hide-details background-color="grey"> </v-text-field>
@@ -176,16 +182,16 @@
                 <v-divider class="mt-2"></v-divider>              
                     <v-row class="mt-2"> 
                         <v-col class="text-right">
-                            <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn>
                             <v-btn :disabled="from_quotation" small color="green" @click="saveInvoice(true)" class="mr-2">Save as Quotation</v-btn>
-                            <v-btn small color="primary" @click="saveInvoice(false)">Submit</v-btn>
-                            
+                            <v-btn small color="primary" @click="saveInvoice(false)" :disabled="outOfStocks != 0">Print and Submit</v-btn>
+                            <PrintInvoiceComponentVue :invoice="invoice" :print_invoice="print_invoice" :totalAmount="totalAmount" @resetPrint="resetPrint"></PrintInvoiceComponentVue> 
                         </v-col>
                     </v-row>
             </v-card-text>
         </v-card>
     </v-dialog>
-
+    
+    
 </template>
 
 <script>
@@ -194,6 +200,9 @@ import Swal from 'sweetalert2';
 import moment from 'moment'
 import AddCustomersDialog from './AddCustomersDialog.vue'; 
 import ShareFunctionsComponent from '../main/ShareFunctionsComponent.vue';
+import PrintInvoiceComponentVue from '../prints/PrintInvoiceComponent.vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 export default {
     mixins: [ShareFunctionsComponent],
     data() {
@@ -211,7 +220,7 @@ export default {
                 invoice_date:moment().format('YYYY-MM-DD'),
                 terms:'',
                 remarks:'',
-                salesman_id:0,
+                salesman_id:1,
                 is_quotation:0,
                 invoice_items:[
                     {
@@ -220,8 +229,13 @@ export default {
                         unit_price:0,
                         uom:'',
                         total_price:0,
+                        item_name:null,
+                        current_stock:0,
+                        hasError:false,
+                        discount_price:0
                     }
                 ],
+                price_bracket:[],
                 id:0
             },
             from_quotation:false,
@@ -237,7 +251,9 @@ export default {
                     name:"CASH",
                     id:9999
                 }
-            ]
+            ],
+            print_invoice:false,
+            outOfStocks:0
         };
     },
 
@@ -259,7 +275,8 @@ export default {
     },
     methods: {
         closeDialog(){
-            this.$router.push({name:'invoice-list'})
+            this.$emit('closeAddInvoiceDialog')
+            this.$emit('refreshTable')
         },
         getAllCustomers(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-customers`).then(response=>{
@@ -271,6 +288,7 @@ export default {
             this.invoice.customer_id = this.invoice.customer_object.id;
             this.invoice.terms = this.invoice.customer_object.terms;
             this.invoice.salesman_id = this.invoice.customer_object.salesman_id
+            this.invoice.discount = this.invoice.customer_object.price_bracket.discount;
         },
         getAllItems(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
@@ -279,11 +297,37 @@ export default {
         },
         getItemDetails(i){
             let item = _.find(this.item_selection, ['id', this.invoice.invoice_items[i].item_id])
+            
             this.invoice.invoice_items[i].uom = item.uom;
-            this.invoice.invoice_items[i].unit_price = this.thousandSeprator(item.item_prices.si_price);
+            this.invoice.invoice_items[i].item_name = item.name;
+            this.invoice.invoice_items[i].unit_price = item.dr_price
+            this.invoice.invoice_items[i].discount_price = Number(item.dr_price) - (Number(item.dr_price) * Number(this.invoice.discount / 100))
+            this.invoice.invoice_items[i].current_stock = item.current_stock
+
+            if(item.current_stock <= 0){
+                this.outOfStocks++
+                this.invoice.invoice_items[i].hasError = true
+            }
+            else{
+                this.outOfStocks--
+                if(this.outOfStocks <= 0){
+                    this.outOfStocks = 0
+                }  
+            }
         },
-        computeAmount(i){
-            let total_price = this.invoice.invoice_items[i].unit_price.replaceAll(",", "") * this.invoice.invoice_items[i].quantity
+        computeAmount(i,current_stock){
+            this.invoice.invoice_items[i].hasError = false
+            if(current_stock < this.invoice.invoice_items[i].quantity){
+                this.outOfStocks++
+                this.invoice.invoice_items[i].hasError = true
+            }
+            else{
+                this.outOfStocks--
+                if(this.outOfStocks <= 0){
+                    this.outOfStocks = 0
+                }   
+            }
+            let total_price = this.invoice.invoice_items[i].discount_price * this.invoice.invoice_items[i].quantity
             this.invoice.invoice_items[i].total_price = this.thousandSeprator(total_price)
         },
         addLine(){
@@ -298,7 +342,7 @@ export default {
         removeLine(){
             this.invoice.invoice_items.pop()
         },
-        saveInvoice(is_quotation){
+        async saveInvoice(is_quotation){
             Object.assign(this.invoice,{total_amount:this.totalAmount})
             let payload = {
                 invoice:this.invoice,
@@ -307,8 +351,9 @@ export default {
             if(is_quotation){
                 this.invoice.is_quotation = 1
             }
-            axios.post(`${process.env.VUE_APP_HOST_API}/api/save-invoice`,payload).then(response=>{
+            await axios.post(`${process.env.VUE_APP_HOST_API}/api/save-invoice`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
+                this.print_invoice = true
                 this.closeDialog()
             })
             
@@ -349,11 +394,14 @@ export default {
         showAddEditDialog(){
             this.addDialog = true
         },
-        
+        resetPrint(){
+            this.print_invoice = false
+        }
     },
     props:['dialog'],
     components:{
-        AddCustomersDialog
+        AddCustomersDialog,
+        PrintInvoiceComponentVue
     }
 };
 </script>
