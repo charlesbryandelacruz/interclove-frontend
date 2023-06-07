@@ -4,11 +4,11 @@
             <v-col class="text-left" cols="3">
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
-            <v-col class="text-left px-2 mt-2" cols="9">
+            <v-col class="text-left px-2 mt-2" cols="9" v-if="userAccess.view">
                 <v-row>
                     <v-col class="text-left">
                         <v-btn 
-                            v-if="isDisabled"
+                            v-if="isDisabled && userAccess.create"
                             small
                             class="mr-2" 
                             color="primary" 
@@ -24,15 +24,17 @@
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
-                                    v-if="isDisabled"
+                                    v-if="isDisabled && userAccess.create_transactions"
                                     small
                                     color="orange" 
+                                    class="mr-2"
                                     @click="showAddEditDialog">
                                         <v-icon>mdi-plus</v-icon>
                                         Add Transaction
                                 </v-btn>
                                 <v-btn 
-                                v-if="isDisabled"
+                                v-if="isDisabled && userAccess.create_funds"
+                                
                                 small
                                 color="green" 
                                 @click="showFundsAddEditDialog">
@@ -144,10 +146,17 @@ export default {
             },
             addDialogPettyCash:false,
             addFundsDialogPettyCash:false,
+            userAccess:{
+                create:false,
+                create_funds:false,
+                create_transactions:false,
+                view:false
+            }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
     },
 
@@ -207,6 +216,25 @@ export default {
                     this.getAll();
                 })
             }
+        },
+        checkAccess(){
+            let payload = {
+                side_nav_id:2,
+                side_nav_link_id:8,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
         }
     },
     components:{

@@ -9,7 +9,7 @@
                </v-toolbar>
                <v-card-text>
                   <v-text-field
-                     v-model="username"
+                     v-model="email"
                      name="username"
                      label="Username"
                      type="text"
@@ -43,18 +43,25 @@ export default {
    return {
      username: "",
      password: "",
+     email:""
    };
  },
  methods: {
-   Login(){
+   async Login(){
          let payload = {
-               name:this.username,
-               email:'charles@gmail.com',
-               password:this.password,         
+               name:this.username,  
+               email:this.email,
+               password:this.password         
          }
-         axios.post(`${process.env.VUE_APP_HOST_API}/login`,payload).then(response=>{
+         await axios.post(`${process.env.VUE_APP_HOST_API}/login`,payload).then(response=>{
                Swal.fire(response.data,'','success')
                this.$router.push('/home')
+
+               axios.post(`${process.env.VUE_APP_HOST_API}/api/get-user-info`,payload).then(resp=>{
+                  localStorage.setItem("user_info",JSON.stringify(resp.data));
+                  localStorage.setItem("user_id",resp.data.id);
+                  localStorage.setItem("user_name",resp.data.name);
+               })
          })
       }
  },

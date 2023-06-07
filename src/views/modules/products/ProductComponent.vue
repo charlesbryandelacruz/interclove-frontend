@@ -4,7 +4,7 @@
             <v-col class="text-left" cols="3">
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
-            <v-col class="text-left px-2 mt-2" cols="9">
+            <v-col class="text-left px-2 mt-2" cols="9" v-if="userAccess.view">
                     <v-card-title>
                         <v-row>
                             <v-col>Item Details</v-col>
@@ -20,6 +20,7 @@
                                     Cancel
                                 </v-btn>
                                 <v-btn 
+                                    v-if="userAccess.edit"
                                     small
                                     class="mr-2" 
                                     :color="!!isDisabled ? 'secondary' : 'green'" 
@@ -27,9 +28,9 @@
                                 >
                                     {{ !!isDisabled ? 'Edit' : 'Save'}}
                                 </v-btn>
-                               
+                            
                                 <v-btn 
-                                    v-if="isDisabled"
+                                    v-if="isDisabled && userAccess.create"
                                     small
                                     color="primary" 
                                     @click="showAddEditDialog">
@@ -152,10 +153,16 @@ export default {
                 {text:'LARGE',value:'M'},
                 {text:'MEDIUM',value:'SET'},
             ],
+            userAccess:{
+                create:false,
+                edit:false,
+                view:false
+            }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
     },
 
@@ -204,6 +211,25 @@ export default {
                     this.getAll();
                 })
             }
+        },
+        checkAccess(){
+            let payload = {
+                side_nav_id:3,
+                side_nav_link_id:9,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
         }
     },
     components:{

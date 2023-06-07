@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-row>
+        <v-row v-if="userAccess.view">
             <v-col class="text-left" cols="3">
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
@@ -8,6 +8,7 @@
                 <v-row class="text-left px-2 mt-1">
                     <v-col class="text-left">
                         <v-btn
+                            v-if="userAccess.create"
                             small
                             color="primary" 
                             @click="showAddEditPurchaseDialog">
@@ -22,6 +23,7 @@
                         <v-spacer></v-spacer>
                         <v-col class="text-right">
                             <v-btn 
+                                v-if="userAccess.create_payment"
                                 :disabled="selected_item.balance_amount == 0" 
                                 small
                                 color="primary" 
@@ -30,7 +32,7 @@
                                     Add Payment
                             </v-btn>
                             <v-btn 
-                                v-if="selected_item.balance_amount == 0 && selected_item.status != 3"
+                                v-if="selected_item.balance_amount == 0 && selected_item.status != 3 && userAccess.update"
                                 class="ml-2"
                                 small
                                 color="success" 
@@ -63,6 +65,11 @@
                                 <v-row>
                                     <v-col>
                                         <v-text-field  v-model="selected_item.address" readonly dense outlined hide-details label="Address"> </v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field  v-model="selected_item.created_by_name" readonly dense outlined hide-details label="Created By"> </v-text-field>
                                     </v-col>
                                 </v-row>
                             </v-col>
@@ -196,7 +203,8 @@
                                     
                                             <v-data-table
                                             :headers="paymentHeaders"
-                                            :items="selected_item.payments">
+                                            :items="selected_item.payments"
+                                            dense>
 
                                             <template v-slot:[`item.gross_amount`]="{ item }">
                                                 {{ item.gross_amount | currency('₱ ',2) }}
@@ -267,29 +275,36 @@ export default {
                 size:'',
                 payments:[],
                 status:'',
-                
+                created_by_name:''
             },
             addDialog:false,
             items:[],
             paymentHeaders:[
-                    { text: 'Reference #', value: 'reference_num' },
-                    { text: 'Transaction #', value: 'cheque_num' },
-                    { text: 'Transaction Date', value: 'transaction_date' },
-                    { text: 'Amount', value: 'gross_amount',align:'right' },
-                    { text: 'Remaining Amount', value: 'remaining_amount',align:'right' },
-                    { text: 'Payment Date', value: 'payment_date' },
-                    { text: 'View Files', value: 'action' },
+                    { text: 'Reference #', value: 'reference_num',class:'grey lighten-2' },
+                    { text: 'Transaction #', value: 'cheque_num',class:'grey lighten-2' },
+                    { text: 'Transaction Date', value: 'transaction_date',class:'grey lighten-2' },
+                    { text: 'Amount', value: 'gross_amount',align:'right',class:'grey lighten-2' },
+                    { text: 'Remaining Amount', value: 'remaining_amount',align:'right',class:'grey lighten-2' },
+                    { text: 'Payment Date', value: 'payment_date',class:'grey lighten-2' },
+                    { text: 'View Files', value: 'action',class:'grey lighten-2' },
                 ],
             paymentItems:[],
             fileDialog:{
                 show:false,
                 files:[]
             },
-            addPurchaseDialog:false
+            addPurchaseDialog:false,
+            userAccess:{
+                create:false,
+                create_payment:false,
+                update:false,
+                view:false
+            }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
         this.getAllSuppliers()
         this.getAllItems()
@@ -381,6 +396,25 @@ export default {
                 this.getAll();
             })
         },
+        checkAccess(){
+            let payload = {
+                side_nav_id:2,
+                side_nav_link_id:5,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
+        }
     },
     components:{
         AddPaymentDialog,

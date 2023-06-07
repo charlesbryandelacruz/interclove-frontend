@@ -1,8 +1,8 @@
 <template>
     <v-card
-        max-height="100vh"
+        scrollable
         class="mr-0 pr-0"
-        ripple
+        
     >   
         <div v-if="loading">
             <v-progress-linear

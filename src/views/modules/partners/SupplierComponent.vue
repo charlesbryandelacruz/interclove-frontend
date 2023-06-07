@@ -4,7 +4,7 @@
             <v-col class="text-left" cols="3">
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col>
-            <v-col class="text-left px-2 mt-2" cols="9">
+            <v-col class="text-left px-2 mt-2" cols="9" v-if="userAccess.view">
                     <v-card-title>
                         <v-row>
                             <v-col>Supplier Details</v-col>
@@ -20,6 +20,7 @@
                                     Cancel
                                 </v-btn>
                                 <v-btn 
+                                    v-if="userAccess.edit"
                                     small
                                     class="mr-2" 
                                     :color="!!isDisabled ? 'secondary' : 'green'" 
@@ -29,7 +30,7 @@
                                 </v-btn>
                                
                                 <v-btn 
-                                    v-if="isDisabled"
+                                    v-if="isDisabled && userAccess.create"
                                     small
                                     color="primary" 
                                     @click="showAddEditDialog">
@@ -219,12 +220,18 @@ export default {
                 { text: 'Quantity', value: 'quantity' },
                 { text: 'Total Amount', value: 'total_amount' },
             ],
-            items:[]
+            items:[],
+            userAccess:{
+                create: false,
+                edit:false,
+                view:false
+            }
         }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
         this.getAllItem();
         this.getAllPaymentTypes();
@@ -306,6 +313,25 @@ export default {
             else if(type == 'p') this.selected_item.supplier_products.pop()
             
         },
+        checkAccess(){
+            let payload = {
+                side_nav_id:4,
+                side_nav_link_id:13,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
+        }
     },
     components:{
         AddSuppliersDialog,

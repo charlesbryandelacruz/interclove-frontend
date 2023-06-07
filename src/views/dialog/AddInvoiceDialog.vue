@@ -346,7 +346,8 @@ export default {
             Object.assign(this.invoice,{total_amount:this.totalAmount})
             let payload = {
                 invoice:this.invoice,
-                from_quotation:this.from_quotation
+                from_quotation:this.from_quotation,
+                user_id:localStorage.getItem('user_id')
             }
             if(is_quotation){
                 this.invoice.is_quotation = 1

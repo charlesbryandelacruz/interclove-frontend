@@ -4,32 +4,24 @@
             <!-- <v-col class="text-left" cols="3">
                 <ListComponentVue :listItems="items" @selectedItem="selectItem" :listTitle="'Items'"></ListComponentVue>
             </v-col> -->
-            <v-col class="text-left px-2 mt-2" cols="12">
+            <v-col class="text-left px-2 mt-2" cols="12" v-if="userAccess.view">
                     <v-card-title>
                         <v-row>
-                            <v-col>Price List</v-col>
+                            <v-col><h2>Price List</h2></v-col>
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
-                                    v-if="!isDisabled"
+                                    v-if="userAccess.edit"
                                     small
                                     class="mr-2" 
-                                    color="grey text--white"
-                                    @click="isDisabled = !isDisabled"
+                                    color="" 
+                                    @click="showPriceChange();"
+                                    dark
                                 >
-                                    Cancel
+                                    Update Price
                                 </v-btn>
                                 <v-btn 
-                                    small
-                                    class="mr-2" 
-                                    :color="!!isDisabled ? 'secondary' : 'green'" 
-                                    @click="saveItem(); isDisabled = !isDisabled"
-                                >
-                                    {{ !!isDisabled ? 'Edit' : 'Save'}}
-                                </v-btn>
-                               
-                                <v-btn 
-                                    v-if="isDisabled"
+                                    v-if="isDisabled && userAccess.create"
                                     small
                                     color="primary" 
                                     @click="showAddEditDialog">
@@ -38,8 +30,23 @@
                                 </v-btn>
                             </v-col>
                         </v-row>
-        
                     </v-card-title>
+                    <v-row>
+                        <v-spacer></v-spacer>
+                        <v-col cols="2">
+                            <v-text-field
+                            dense
+                            outlined
+                            hide-details
+                            v-model="search"
+                            class="text-right mx-2 mb-2"
+                            label="Search"
+                            style="border-radius:15px"
+                            >
+
+                            </v-text-field>   
+                        </v-col>
+                    </v-row>
                     <v-divider></v-divider>
                     <v-card-text>
                         <v-row>
@@ -47,6 +54,10 @@
                                 <v-data-table 
                                     :headers="pricingTable.headers"
                                     :items="items"
+                                    v-model="item_price_list"
+                                    class="elevation-1"
+                                    :search="search"
+                                    
                                     >
                                     <!-- <template v-slot:[`item.si_price`]="{ item }">
                                         {{ item.si_price | currency('₱ ',2) }}
@@ -54,22 +65,62 @@
                                     <template v-slot:body="props">
                                         <tbody>
                                          <tr v-for="item in props.items">
-                                           <td v-for="(header, index) in pricingTable.headers" :class="index >= 2 ? 'text-right' : ''">
-                                                <span v-if="index <= 1">{{ item[header.value]}}</span>
-                                                <span v-if="index == 2 | index == 3">{{ item[header.value] | currency('₱ ',2)}}</span>
+                                           <td v-for="(header, index) in pricingTable.headers" :class="index >= 3 ? 'text-right' : ''">
+                                                <span v-if="index == 0">
+                                                    <v-checkbox v-model="item.selected"></v-checkbox>
+                                                </span>
+                                                <span v-if="index <= 2">{{ item[header.value]}}</span>
+                                                <span v-if="index == 3 | index == 4">{{ item[header.value] | currency('₱ ',2)}}</span>
                                                 <span v-else>{{ item.price_b[header.value] | currency('₱ ',2)}}</span>
-                                                <!-- {{ header }} -->
-
+                                              
                                            </td>
                                          </tr>
                                         </tbody>
-                                       </template>
+                                    </template>
                                 </v-data-table>
                             </v-col>
                           
                         </v-row>
                     </v-card-text>
             </v-col>
+            <v-dialog v-model="showPriceUpdateDialog" persistent max-width="30%" style="overflow:hidden;">
+                <v-card>
+                    <v-card-title>
+                        <v-row>
+                            <v-col class="text-left">
+                                Update Price
+                            </v-col>
+                            <v-col class="text-right">
+                                <v-btn text @click="showPriceUpdateDialog = false"><v-icon>mdi-close-circle</v-icon></v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-title>   
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                dense
+                                outlined
+                                hide-details
+                                class="mt-2"
+                                label="New DR Price"
+                                v-model="new_price"
+                                >
+                                </v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-divider class="mt-2"></v-divider>              
+                        <v-row class="mt-2"> 
+                            <v-col class="text-right">
+                                <!-- <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn> -->
+                                <v-btn small color="primary" @click="saveUpdatedPrice()">Submit</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                    
+                </v-card>
+            </v-dialog>
         </v-row>
         <AddPriceBracketDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddPriceBracketDialogVue>
     </v-app>
@@ -100,17 +151,29 @@ export default {
             isDisabled:true,
             pricingTable:{
                 headers:[
-                    { text: 'Name', value: 'name' },
-                    { text: 'Current Stocks', value: 'current_stock' },
-                    { text: 'Purchase Price', value: 'total_cost',align:'right' },
-                    { text: 'DR Price', value: 'dr_price',align:'right' },
+                    { text: '', value: '',class:'grey lighten-2'},
+                    { text: 'Name', value: 'name',class:'grey lighten-2' },
+                    { text: 'Current Stocks', value: 'current_stock',class:'grey lighten-2' },
+                    { text: 'Purchase Price', value: 'total_cost',align:'right',class:'grey lighten-2' },
+                    { text: 'DR Price', value: 'dr_price',align:'right',class:'grey lighten-2' },
                 ],
                 items:[]
+            },
+            item_price_list:[],
+            test:0,
+            showPriceUpdateDialog:false,
+            new_price:0,
+            search:'',
+            userAccess:{
+                create:false,
+                edit:false,
+                view:false
             }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
     },
 
@@ -147,35 +210,66 @@ export default {
             });
         },
         getAll(){
+            this.items = [];
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
                 this.items = response.data
-
+                this.items.forEach(e=>{
+                    Object.assign(e,{selected:false})
+                })
                 for (const prop in this.items[0].price_b){
                     this.pricingTable.headers.push(
-                        { text: prop, value: prop, align:'right'},
+                        { text: prop, value: prop, align:'right',class:'grey lighten-2'},
                     )
                 }
             })
         },
-        saveItem(){
-            if(!this.isDisabled){
-                let payload = {
-                    items:this.selected_item
+        showPriceChange(){
+            this.showPriceUpdateDialog = true
+        },
+        saveUpdatedPrice(){
+            let a = this.items.filter(e=>{
+                if (e.selected){
+                    return e.id
                 }
-                axios.post(`${process.env.VUE_APP_HOST_API}/api/update-pricing`,payload).then(response=>{
-                    Swal.fire(response.data,'','success')
-                    this.getAll();
-                })
+            })
+            let payload = {
+                item_ids:a.map(e=>{return e.id}),
+                new_price:this.new_price
             }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/update-pricing`,payload).then(response=>{
+                Swal.fire(response.data,'','success')
+                this.showPriceUpdateDialog = false
+                this.getAll();
+            })
+        },
+        checkAccess(){
+            let payload = {
+                side_nav_id:3,
+                side_nav_link_id:10,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
         }
     },
     components:{
         AddPriceBracketDialogVue,
         ListComponentVue
-    }
+    },
+    computed:{
+    },
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style>
 </style>

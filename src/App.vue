@@ -1,7 +1,42 @@
 <template>
   <v-app id="inspire">
     <v-app-bar app dense v-if="$router.currentRoute.name != 'login'">
-      <router-link to="/home">Home</router-link>
+      <v-row>
+        <v-col class="mt-5">
+          <router-link to="/home">Home</router-link>
+        </v-col>
+        <v-col class="text-right mr-4" cols="1">
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+                <v-list-item class="pa-0 ma-0 py-1">
+                    <v-avatar size="34" color="gold" class="pa-0 ma-2">
+                        <v-img src="interclove_logo.png">
+                        </v-img>
+                    </v-avatar>
+                    
+                    <span class="text-caption"> <h3>{{ name }}</h3> </span>
+                    <v-btn icon v-bind="attrs" v-on="on">
+                        <v-icon>mdi-chevron-down</v-icon>
+                    </v-btn>
+                </v-list-item>
+            </template>
+            <v-list dense>
+                <!-- <v-list-item link>
+                    <v-icon size="16">mdi-account</v-icon>
+                    <v-list-item-title> My Profile </v-list-item-title>
+                </v-list-item> -->
+                <!-- <v-list-item link @click="changePassword">
+                    <v-icon size="16">mdi-lock</v-icon>
+                    <v-list-item-title> Change Password </v-list-item-title>
+                </v-list-item> -->
+                <v-list-item link @click="logout()">
+                    <v-icon size="16">mdi-logout</v-icon>
+                    <v-list-item-title> Logout </v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-menu>
+        </v-col>
+      </v-row>
     </v-app-bar>
     <v-navigation-drawer
       v-if="$router.currentRoute.name != 'login'"
@@ -93,7 +128,7 @@ export default {
             { title: 'List of Purchase Orders',link:'/purchase-order-list' },
             { title: 'List of Purchases',link:'/purchase-list' },
             { title: 'List of Payments',link:'/payment-list' },
-            { title: 'Expenses',link:'/' },
+            { title: 'Expenses',link:'/expense-list' },
             { title: 'Petty Cash',link:'/petty-cash' },
           ],
           title: 'Payables',
@@ -103,7 +138,7 @@ export default {
           items: [
             { title: 'List of Products',link:'/products' },
             { title: 'Price List',link:'/price-list' },
-            { title: 'Invetory Adjustment',link:'/' },
+            { title: 'Invetory Adjustment',link:'/inventory-adjustment' },
             { title: 'Inventory Tracking',link:'/' }
           ],
           title: 'Inventory',
@@ -132,13 +167,24 @@ export default {
     };
   },
   mounted(){
-    console.log(this.$router)
   },
   methods: {
     openGithub() {
       // window.open('https://github.com/disjfa/vuetify-sidebar-template');
     },
+    logout(){
+      localStorage.removeItem('user_info');
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_id');
+      this.name = '';
+      this.$router.push('/login')
+    }
   },
+  computed:{
+    name(){
+      return localStorage.getItem('user_name')
+    }
+  }
 };
 </script>
 

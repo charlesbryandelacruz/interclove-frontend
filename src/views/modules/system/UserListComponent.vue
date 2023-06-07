@@ -31,10 +31,19 @@
                                 <v-btn 
                                     v-if="isDisabled"
                                     small
+                                    class="mr-2"
                                     color="primary" 
                                     @click="showAddEditDialog">
                                         <v-icon>mdi-plus</v-icon>
                                         Add
+                                </v-btn>
+                                <v-btn 
+                                    v-if="isDisabled"
+                                    small
+                                    color="primary" 
+                                    @click="showAddEditRoleDialog">
+                                        <v-icon>mdi-plus</v-icon>
+                                        Add Role
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -91,6 +100,7 @@
             </v-col>
         </v-row>
         <AddUserDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddUserDialogVue>
+        <AddUserRoleDialogVue :addRoleDialog="addRoleDialog" @closeRoleDialog="closeRoleDialog()" @refreshData="getAll()" :selected_item="selected_item"></AddUserRoleDialogVue>
     </v-app>
   
 </template>
@@ -98,6 +108,7 @@
 <script>
 import Swal from 'sweetalert2';
 import AddUserDialogVue from '../../dialog/AddUserDialog.vue';
+import AddUserRoleDialogVue from '../../dialog/AddUserRoleDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 export default {
@@ -105,6 +116,7 @@ export default {
 
     data() {
         return {
+            addRoleDialog:false,
             addDialog:false,
             items:[],
             addDialog:false,
@@ -134,6 +146,12 @@ export default {
         },
         showAddEditDialog(){
             this.addDialog = true
+        },
+        showAddEditRoleDialog(){
+            this.addRoleDialog = true
+        },
+        closeRoleDialog(){
+            this.addRoleDialog = false
         },
         cancelItem(){
             Swal.fire({
@@ -178,7 +196,8 @@ export default {
     },
     components:{
         AddUserDialogVue,
-        ListComponentVue
+        ListComponentVue,
+        AddUserRoleDialogVue
     }
 };
 </script>

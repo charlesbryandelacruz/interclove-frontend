@@ -3,8 +3,28 @@
         <v-row>
            
             <v-col class="text-left px-2 mt-2" cols="12">
+                <v-card-title>
+                    <v-row>
+                        <v-col><h2>Collection List</h2></v-col>
+                        <v-spacer></v-spacer>
+                        <v-col class="text-right" cols="2">
+                            <v-text-field
+                            dense
+                            outlined
+                            hide-details
+                            v-model="search"
+                            class="text-right mx-2 mb-2"
+                            label="Search"
+                            style="border-radius:15px"
+                            >
+    
+                            </v-text-field>   
+                        </v-col>
+                    </v-row>
+                </v-card-title>
+                <v-divider></v-divider>
                     <v-card-text>
-                        <v-row>
+                        <v-row v-if="userAccess.view">
                             <v-col cols="12">
                                 <v-data-table
                                 :headers="headers"
@@ -12,7 +32,8 @@
                                 item-key="id"
                                 show-expand
                                 single-expand
-                                dense
+                                :search="search"
+                               
                             >
                             <template v-slot:[`item.balance_amount`]="{ item }">
                                 {{ item.balance_amount | currency('₱ ',2) }}
@@ -43,8 +64,8 @@
                                     </template>
                                     <template v-slot:[`item.action`]="{ item }">
                                         <span v-if="item.remaining_amount != 0">
-                                        <v-btn fab x-small icon text color="green" @click="approvePayment(item)"><v-icon>mdi-check</v-icon></v-btn>
-                                        <v-btn fab x-small icon text color="red" @click="cancelPayment(item)"><v-icon>mdi-cancel</v-icon></v-btn>
+                                        <v-btn fab x-small icon text color="green" @click="approvePayment(item)" v-if="userAccess.approve"><v-icon>mdi-check</v-icon></v-btn>
+                                        <v-btn fab x-small icon text color="red" @click="cancelPayment(item)" v-if="userAccess.cancel"><v-icon>mdi-cancel</v-icon></v-btn>
                                         </span>
                                     </template>
                                     </v-data-table>
@@ -76,13 +97,13 @@ export default {
             item_selection:[],
             items:[],
             headers:[
-                { text: 'Date', value: 'created_at' },
-                { text: 'Invoice #', value: 'invoice_num' },
-                { text: 'Customer', value: 'customer.company_name' },
-                { text: 'Salesman', value: 'salesman_text' },
-                { text: 'Balance Amount', value: 'balance_amount',align:'right' },
-                { text: 'Paid Amount', value: 'paid_amount',align:'right' },
-                { text: 'Total Amount', value: 'total_amount',align:'right' },
+                { text: 'Date', value: 'created_at',class:'grey lighten-2' },
+                { text: 'Invoice #', value: 'invoice_num',class:'grey lighten-2' },
+                { text: 'Customer', value: 'customer.company_name',class:'grey lighten-2' },
+                { text: 'Salesman', value: 'salesman_text',class:'grey lighten-2' },
+                { text: 'Balance Amount', value: 'balance_amount',align:'right',class:'grey lighten-2' },
+                { text: 'Paid Amount', value: 'paid_amount',align:'right',class:'grey lighten-2' },
+                { text: 'Total Amount', value: 'total_amount',align:'right',class:'grey lighten-2' },
                 
             ],
             collection_header:[
@@ -94,10 +115,17 @@ export default {
                 { text: 'Payment Date', value: 'payment_date' },
                 { text: 'Action', value: 'action' },
             ],
+            search:'',
+            userAccess:{
+                approve:false,
+                view:false,
+                cancel:false
+            }
         };
     },
 
     mounted() {
+        this.checkAccess()
         this.getAll();
     },
     methods: {
@@ -142,6 +170,25 @@ export default {
                     })
                 }
             });
+        },
+        checkAccess(){
+            let payload = {
+                side_nav_id:1,
+                side_nav_link_id:3,
+                user_id:localStorage.getItem('user_id'),
+            }
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-access`,payload).then(response=>{
+                for(const property in response.data){
+                    let isActive = false
+                    if(response.data[property]['active'] == 1){
+                        isActive = true
+                    }
+                    Object.assign(this.userAccess,{
+                        [response.data[property]['code']]:isActive
+                    })
+                }
+                console.log(this.userAccess)
+            })
         }
     },  
     components:{

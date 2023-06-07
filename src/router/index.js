@@ -19,106 +19,289 @@ import QuotationListComponent from '../views/modules/receivables/QuotationListCo
 import AddPurchaseDialog from '../views/dialog/AddPurchaseDialog.vue'
 import PaymentListComponent from '../views/modules/receivables/PaymentListComponent.vue'
 import PurchaseOrderListComponent from '../views/modules/receivables/PurchaseOrderListComponent.vue'
+import ExpenseListComponent from '../views/modules/payables/ExpenseListComponent.vue'
+import InventoryAdjustmentComponent from '../views/modules/products/InventoryAdjustmentComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/home',
     name: 'home',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: HelloWorld
   },
   {
     path: '/login',
     name: 'login',
+
     component: Login
   },
   {
     path: '/products',
     name: 'products',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: Products
   },
   {
     path: '/price-list',
     name: 'price-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: PriceListComponent
   },
   {
     path: '/customers',
     name: 'customers',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: CustomerComponent
   },
   {
     path: '/suppliers',
     name: 'suppliers',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: SupplierComponent
   },
   {
     path: '/add-invoice',
     name: 'add-invoice',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: AddInvoiceDialog,
     props: { dialog: true }
   },
   {
     path: '/invoice-list',
     name: 'invoice-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: InvoiceListComponent,
   },
   {
     path: '/users-list',
     name: 'users-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: UserListComponent,
   },
   {
     path: '/salesmans',
     name: 'salesmans',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: SalesmanComponent,
   },
   {
     path: '/collection-list',
     name: 'collection-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: CollectionListComponent,
   },
   {
     path: '/add-collection',
     name: 'add-collection',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: AddCollectionDialog,
     props: { dialog: true }
   },
   {
     path: '/petty-cash',
     name: 'petty-cash',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: PettyCashComponent,
     props: { dialog: true }
   },
   {
     path: '/quotation-list',
     name: 'quotation-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: QuotationListComponent,
     props: { dialog: true }
   },
   {
     path: '/add-purchase',
     name: 'add-purchase',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: AddPurchaseDialog,
     props: { dialog: true }
   },
   {
     path: '/purchase-list',
     name: 'purchase-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: PurchaseListComponent,
   },
   {
     path: '/payment-list',
     name: 'payment-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: PaymentListComponent,
   },
   {
     path: '/purchase-order-list',
     name: 'purchase-order-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
     component: PurchaseOrderListComponent,
   },
-]
+  {
+    path: '/expense-list',
+    name: 'expense-list',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
 
+    component: ExpenseListComponent,
+  },
+  {
+    path: '/inventory-adjustment',
+    name: 'inventory-adjustment',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+
+    component: InventoryAdjustmentComponent,
+  },
+]
 const router = new VueRouter({routes, mode: 'history'});
 
 export default router
