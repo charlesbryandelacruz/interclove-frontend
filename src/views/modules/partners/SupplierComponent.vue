@@ -137,32 +137,17 @@
                         <v-col>
                             <v-data-table 
                                 dense
-                                :headers="pricingTable.headers"
-                                :items="pricingTable.items"
+                                :headers="transaction.headers"
+                                :items="selected_item.purchases"
                                 >
-                                <template v-slot:[`item.si_price`]="{ item }">
-                                    {{ item.si_price | currency('₱ ',2) }}
+                                <template v-slot:[`item.total_amount`]="{ item }">
+                                    {{ item.total_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.si_price_1`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .10) | currency('₱ ',2) }}
+                                <template v-slot:[`item.balance_amount`]="{ item }">
+                                    {{ item.balance_amount | currency('₱ ',2) }}
                                 </template>
-                                <template v-slot:[`item.si_price_2`]="{ item }">
-                                    {{( item.si_price - item.si_price * .15) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.si_price_3`]="{ item }">
-                                    {{ item.si_price - (item.si_price * .20) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price`]="{ item }">
-                                    {{ item.dr_price | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_1`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .10) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_2`]="{ item }">
-                                    {{( item.dr_price - item.dr_price * .15) | currency('₱ ',2) }}
-                                </template>
-                                <template v-slot:[`item.dr_price_3`]="{ item }">
-                                    {{ item.dr_price - (item.dr_price * .20) | currency('₱ ',2) }}
+                                <template v-slot:[`item.paid_amount`]="{ item }">
+                                    {{ item.paid_amount | currency('₱ ',2) }}
                                 </template>
                             </v-data-table>
                         </v-col>
@@ -221,11 +206,21 @@ export default {
                 { text: 'Total Amount', value: 'total_amount' },
             ],
             items:[],
-            userAccess:{
-                create: false,
-                edit:false,
-                view:false
-            }
+        },
+        transaction:{
+            headers:[
+                { text: 'Purchase #', value: 'purchase_num' },
+                { text: 'Date', value: 'purchase_date' },
+                { text: 'Total Amount', value: 'total_amount',align:'right' },
+                { text: 'Balance Amount', value: 'balance_amount',align:'right' },
+                { text: 'Paid Amount', value: 'paid_amount',align:'right' },
+            ],
+            items:[]
+        },
+        userAccess:{
+            create: false,
+            edit:false,
+            view:false
         }
         };
     },

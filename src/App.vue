@@ -78,6 +78,7 @@
             no-action      
             active-class="primary white--text"    
           >
+          
             <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -112,7 +113,7 @@ export default {
   data() {
     return {
       drawer: true,
-      items: [
+      admin: [
         {
           action: 'mdi-cash-register',
           items: [
@@ -157,11 +158,69 @@ export default {
           action: 'mdi-cog',
           items: [
             { title: 'Users',link:'/users-list' },
-            { title: 'Company Info',link:'/' },
+            // { title: 'Company Info',link:'/' },
           ],
           title: 'System',
         },
+        {
+          action: 'mdi-file-multiple',
+          items: [
+            { title: 'Sales Report',link:'/sales-report' },
+            { title: 'Collection Report',link:'/collection-report' },
+            { title: 'Purchase Report',link:'/purchase-report' },
+            { title: 'Payment Report',link:'/payment-report' },
+            { title: 'Expense Report',link:'/expense-report' },
+            { title: 'Inventory Report',link:'/inventory-report' },
+            { title: 'Financial Report',link:'/financial-report' },
+          ],
+          title: 'Reports',
+        },
         
+      ],
+      not_admin: [
+        {
+          action: 'mdi-cash-register',
+          items: [
+            { title: 'List of Quotation',link:'/quotation-list'},
+            { title: 'List of Invoices',link:'/invoice-list' },
+            { title: 'List of Collection',link:'/collection-list' },
+          ],
+          title: 'Receivables',
+        },
+        {
+          action: 'mdi-cash-multiple',
+          items: [
+            { title: 'List of Purchase Orders',link:'/purchase-order-list' },
+            { title: 'List of Purchases',link:'/purchase-list' },
+            { title: 'List of Payments',link:'/payment-list' },
+            { title: 'Expenses',link:'/expense-list' },
+            { title: 'Petty Cash',link:'/petty-cash' },
+          ],
+          title: 'Payables',
+        },
+        {
+          action: 'mdi-warehouse',
+          items: [
+            { title: 'List of Products',link:'/products' },
+            { title: 'Price List',link:'/price-list' },
+            { title: 'Invetory Adjustment',link:'/inventory-adjustment' },
+            { title: 'Inventory Tracking',link:'/' }
+          ],
+          title: 'Inventory',
+        },
+        {
+          action: 'mdi-file-multiple',
+          items: [
+            { title: 'Sales Report',link:'/sales-report' },
+            { title: 'Collection Report',link:'/collection-report' },
+            { title: 'Purchase Report',link:'/purchase-report' },
+            { title: 'Payment Report',link:'/payment-report' },
+            { title: 'Expense Report',link:'/expense-report' },
+            { title: 'Inventory Report',link:'/inventory-report' },
+            { title: 'Financial Report',link:'/financial-report' },
+          ],
+          title: 'Reports',
+        },
       ],
         mini: true,
     };
@@ -183,6 +242,15 @@ export default {
   computed:{
     name(){
       return localStorage.getItem('user_name')
+    },
+    position(){
+      return localStorage.getItem('position')
+    },
+    items(){
+      if(this.position == "Admin"){
+        return this.admin;
+      }
+      return this.not_admin;
     }
   }
 };

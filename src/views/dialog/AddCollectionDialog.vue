@@ -70,7 +70,7 @@
                         <v-autocomplete cols="4" v-if="collection.payment_type_id != 2 && !!collection.payment_type_id"
                             v-model="collection.bank_id"
                             label="Bank"
-                            :items="[{name:'BDO',id:1},{name:'BPI',id:2}]"
+                            :items="bank_selection"
                             item-text="name"
                             item-value="id"
                             outlined
@@ -222,6 +222,7 @@ export default {
                 cheque_num:null,
                 collected_amount:0,
                 transaction_date:'',
+                bank_id:null
                 
             },
             showDialog:false,
@@ -237,12 +238,14 @@ export default {
             file: {},
             fileSelected: false,
             showFileSelect: false,
-            uploadedFiles:null
+            uploadedFiles:null,
+            bank_selection:[]
         }
     },
 
     mounted() {
         this.getAllCollectionTypes();
+        this.getAllBanks();
     },
     methods: {
         uploadedData(data) {
@@ -350,6 +353,11 @@ export default {
             this.showFileSelect = false;
             this.file = file;
         },
+        getAllBanks(){
+            axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-banks`).then(response=>{
+                this.bank_selection = response.data
+            })
+        }
     },
     props:['addDialog','selected_item'],
     watch:{

@@ -21,6 +21,12 @@ import PaymentListComponent from '../views/modules/receivables/PaymentListCompon
 import PurchaseOrderListComponent from '../views/modules/receivables/PurchaseOrderListComponent.vue'
 import ExpenseListComponent from '../views/modules/payables/ExpenseListComponent.vue'
 import InventoryAdjustmentComponent from '../views/modules/products/InventoryAdjustmentComponent.vue'
+import SalesReportComponent from '../views/modules/reports/SalesReportComponent.vue'
+import CollectionReportComponent from '../views/modules/reports/CollectionReportComponent.vue'
+import PurchaseReportComponent from '../views/modules/reports/PurchaseReportComponent.vue'
+import PaymentReportComponent from '../views/modules/reports/PaymentReportComponent.vue'
+import ExpenseReportComponent from '../views/modules/reports/ExpenseReportComponent.vue'
+import InventoryReportComponent from '../views/modules/reports/InventoryReportComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -298,8 +304,85 @@ const routes = [
         return next({ name: "login" });
       }
   },
-
     component: InventoryAdjustmentComponent,
+  },
+  {
+    path: '/sales-report',
+    name: 'sales-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: SalesReportComponent,
+  },
+  {
+    path: '/collection-report',
+    name: 'collection-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: CollectionReportComponent,
+  },
+  {
+    path: '/purchase-report',
+    name: 'purchase-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: PurchaseReportComponent,
+  },
+  {
+    path: '/payment-report',
+    name: 'payment-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: PaymentReportComponent,
+  },
+  {
+    path: '/expense-report',
+    name: 'expense-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: ExpenseReportComponent,
+  },
+  {
+    path: '/inventory-report',
+    name: 'inventory-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: InventoryReportComponent,
   },
 ]
 const router = new VueRouter({routes, mode: 'history'});

@@ -6,6 +6,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import  Vue2Filters from 'vue2-filters'
 import moment from 'moment/moment'
+import FileSaver from 'file-saver'
 Vue.use(vuetify);
 Vue.use(Vue2Filters);
 Vue.filter('formatDate', function (value) {
@@ -19,5 +20,6 @@ new Vue({
   Swal,
   vuetify,
   moment,
+  FileSaver,
   render: function (h) { return h(App) }
 }).$mount('#app')

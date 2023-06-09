@@ -70,7 +70,7 @@
                                                     <v-checkbox v-model="item.selected"></v-checkbox>
                                                 </span>
                                                 <span v-if="index <= 2">{{ item[header.value]}}</span>
-                                                <span v-if="index == 3 | index == 4">{{ item[header.value] | currency('₱ ',2)}}</span>
+                                                <span v-if="index == 3 || index == 4">{{ item[header.value] | currency('₱ ',2)}}</span>
                                                 <span v-else>{{ item.price_b[header.value] | currency('₱ ',2)}}</span>
                                               
                                            </td>
@@ -217,6 +217,7 @@ export default {
                     Object.assign(e,{selected:false})
                 })
                 for (const prop in this.items[0].price_b){
+                    console.log(prop)
                     this.pricingTable.headers.push(
                         { text: prop, value: prop, align:'right',class:'grey lighten-2'},
                     )
@@ -260,7 +261,8 @@ export default {
                 }
                 console.log(this.userAccess)
             })
-        }
+        },
+        
     },
     components:{
         AddPriceBracketDialogVue,

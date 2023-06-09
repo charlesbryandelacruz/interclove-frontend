@@ -55,12 +55,13 @@ export default {
          }
          await axios.post(`${process.env.VUE_APP_HOST_API}/login`,payload).then(response=>{
                Swal.fire(response.data,'','success')
-               this.$router.push('/home')
 
-               axios.post(`${process.env.VUE_APP_HOST_API}/api/get-user-info`,payload).then(resp=>{
+              axios.post(`${process.env.VUE_APP_HOST_API}/api/get-user-info`,payload).then(resp=>{
                   localStorage.setItem("user_info",JSON.stringify(resp.data));
                   localStorage.setItem("user_id",resp.data.id);
                   localStorage.setItem("user_name",resp.data.name);
+                  localStorage.setItem("position",resp.data.position);
+                  this.$router.push('/home')
                })
          })
       }
