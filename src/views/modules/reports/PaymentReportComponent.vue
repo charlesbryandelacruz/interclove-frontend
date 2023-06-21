@@ -170,6 +170,11 @@
                         </v-row>
                     </v-card-text>
                     <v-divider></v-divider>
+                    <v-row class="ma-auto pa-auto">
+                        <v-col cols=12 class="text-right">
+                            <h3>Total: {{ total_amount | currency('₱ ',2)}}</h3>
+                        </v-col>
+                    </v-row>
                     <v-card-text>
                         <v-row>
                             <v-col cols="12">
@@ -315,6 +320,7 @@ export default {
             bank_selection:[],
             payment_type_selection:[],
             payment_type_id:null,
+            total_amount:0
         };
     },
 
@@ -334,6 +340,9 @@ export default {
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-payment-report`,payload).then(response=>{
                 this.items = response.data
+                this.items.forEach(e=>{
+                    this.total_amount += Number (e.gross_amount)
+                })
             })
         },
         getAllSuppliers(){

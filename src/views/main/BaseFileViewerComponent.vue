@@ -21,6 +21,9 @@
                     <template v-slot:[`item.action`]="{ item }">
                         <v-btn fab x-small icon text color="orange" @click="showFile(item)"><v-icon>mdi-eye</v-icon></v-btn>
                     </template>
+                    <template v-slot:[`item.created_at`]="{ item }">
+                        {{  item.created_at | formatDate }}
+                    </template>
                     </v-data-table>
                 </v-card-text>
             </v-card>

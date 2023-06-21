@@ -263,7 +263,7 @@ export default {
             this.selected_item.purchase_items[i].unit_price = item.item_prices.si_price;
         },
         computeAmount(i){
-            let total_price = this.selected_item.purchase_items[i].unit_price * this.selected_item.purchase_items[i].quantity
+            let total_price = this.selected_item.purchase_items[i].unit_price.replaceAll(",", "") * this.selected_item.purchase_items[i].quantity
             this.selected_item.purchase_items[i].total_price = total_price
         },
         addLine(){

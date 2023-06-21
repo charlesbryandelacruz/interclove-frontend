@@ -16,6 +16,14 @@
                                 <v-icon>mdi-plus</v-icon>
                                 Add New Expense
                         </v-btn>
+                        <v-btn 
+                            v-if="isDisabled && userAccess.create"
+                            small
+                            color="primary" 
+                            @click="showAddEditDialog">
+                                <v-icon>mdi-plus</v-icon>
+                                Add Expense Type
+                        </v-btn>
                     </v-col>
                 </v-row>
                     <v-card-title>
@@ -120,6 +128,7 @@
             </v-col>
         </v-row>
         <AddExpenseDialog :addDialogExpense="addDialogExpense" @closeDialogExpense="closeDialogExpense()" @refreshData="getAll()"></AddExpenseDialog>
+        <AddExpenseTypeDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddExpenseTypeDialogVue>
         <BaseFileViewerComponent :show="fileDialog.show" :files="fileDialog.files" @closeFileViewer="closeFileViewer"></BaseFileViewerComponent>
     </v-app>
   
@@ -131,6 +140,7 @@ import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 import AddExpenseDialog from '@/views/dialog/AddExpenseDialog.vue';
 import BaseFileViewerComponent from '@/views/main/BaseFileViewerComponent.vue';
+import AddExpenseTypeDialogVue from '@/views/dialog/AddExpenseTypeDialog.vue';
 export default {
     name: 'PosLaravelVueProductComponent',
 
@@ -155,7 +165,8 @@ export default {
             userAccess:{
                 view:false,
                 create:false
-            }
+            },
+            addDialog:false,
         };
     },
     mounted() {
@@ -170,11 +181,14 @@ export default {
         closeDialogExpense(){
             this.addDialogExpense = false
         },
-        closeFundsDialogExpense(){
-            this.addFundsDialogExpense = false
+        closeDialog(){
+            this.addDialog = false
         },
         showAddEditDialogExpense(){
             this.addDialogExpense = true
+        },
+        showAddEditDialog(){
+            this.addDialog = true
         },
         getAll(){
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-expenses`).then(response=>{
@@ -221,7 +235,8 @@ export default {
     components:{
         AddExpenseDialog,
         ListComponentVue,
-        BaseFileViewerComponent
+        BaseFileViewerComponent,
+        AddExpenseTypeDialogVue
     }
 };
 </script>

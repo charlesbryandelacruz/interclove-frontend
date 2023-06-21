@@ -138,6 +138,7 @@ watch:{
     addDialogExpense:{
         handler(val){
             this.showDialog = val
+            this.getAllExpensesType();
         }
     }
 },

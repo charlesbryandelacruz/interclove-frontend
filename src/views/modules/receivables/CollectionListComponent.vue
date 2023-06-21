@@ -24,6 +24,24 @@
                 </v-card-title>
                 <v-divider></v-divider>
                     <v-card-text>
+                        <v-row>
+                            <v-col cols="2">
+                                <v-autocomplete 
+                                    v-model="filter_data" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Filter" 
+                                    :items="filter_selection" 
+                                    > 
+                                </v-autocomplete>
+                            </v-col>
+                            <v-col cols="2">
+                                <v-btn color="primary" @click="getAll()">
+                                    Filter
+                                </v-btn>
+                            </v-col>
+                        </v-row>
                         <v-row v-if="userAccess.view">
                             <v-col cols="12">
                                 <v-data-table
@@ -120,7 +138,14 @@ export default {
                 approve:false,
                 view:false,
                 cancel:false
-            }
+            },
+            filter_data: null,
+            filter_selection:[
+                {text:'All', value:null},
+                {text:'With Pending Approval',value:1},
+                {text:'With Balance',value:2},
+                {text:'Paid',value:3}
+            ]
         };
     },
 
@@ -131,7 +156,8 @@ export default {
     methods: {
         getAll(){
             let payload = {
-                is_quotation:0
+                is_quotation:0,
+                filter_data:this.filter_data
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-invoices`,payload).then(response=>{
                 this.items = response.data
@@ -189,6 +215,39 @@ export default {
                 }
                 console.log(this.userAccess)
             })
+        },
+        cancelPayment(item){
+            Swal.fire({
+                title: "",
+                text: "Are you sure you want to Cancel Collection?",
+                icon: "warning",
+                showConfirmButton: true,
+                showCancelButton: true,
+                reverseButtons: true,
+                allowOutsideClick: false,
+                confirmButtonColor: '#397373',
+                cancelButtonColor: 'grey',
+                confirmButtonText: 'Confirm',
+                showCloseButton: true,
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    const data = new FormData();
+                    const config = {
+                        headers: {
+                            "content-type": "multipart/form-data",
+                        },
+                    };  
+                    data.append("colection_id",item.id);
+                    axios.post(`${process.env.VUE_APP_HOST_API}/api/cancel-collection`,data,config).then(response=>{
+                        Swal.fire(response.data,'','success');
+                        this.getAll();
+                        // this.$emit('refreshData')
+                        // this.$emit('closeDialog')
+                        // this.resetFields();
+                    })
+                }
+            });
         }
     },  
     components:{

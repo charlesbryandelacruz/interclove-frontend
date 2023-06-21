@@ -187,6 +187,39 @@ export default {
                 }
                 console.log(this.userAccess)
             })
+        },
+        cancelPayment(item){
+            Swal.fire({
+                title: "",
+                text: "Are you sure you want to Cancel Payment?",
+                icon: "warning",
+                showConfirmButton: true,
+                showCancelButton: true,
+                reverseButtons: true,
+                allowOutsideClick: false,
+                confirmButtonColor: '#397373',
+                cancelButtonColor: 'grey',
+                confirmButtonText: 'Confirm',
+                showCloseButton: true,
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    const data = new FormData();
+                    const config = {
+                        headers: {
+                            "content-type": "multipart/form-data",
+                        },
+                    };  
+                    data.append("payment_id",item.id);
+                    axios.post(`${process.env.VUE_APP_HOST_API}/api/cancel-payment`,data,config).then(response=>{
+                        Swal.fire(response.data,'','success');
+                        this.getAll();
+                        // this.$emit('refreshData')
+                        // this.$emit('closeDialog')
+                        // this.resetFields();
+                    })
+                }
+            });
         }
     },  
     components:{

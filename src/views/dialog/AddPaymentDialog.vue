@@ -222,6 +222,7 @@ export default {
                 cheque_num:null,
                 collected_amount:0,
                 transaction_date:'',
+                bank_id:null
                 
             },
             showDialog:false,

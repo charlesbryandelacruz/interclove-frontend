@@ -134,6 +134,11 @@
                     <h3 class="mt-4">Transactions</h3>
                     <v-divider class="mb-2"></v-divider>
                     <v-row>
+                        <v-col cols=12 class="text-right">
+                            <h3>Total: {{ total_amount | currency('₱ ',2)}}</h3>
+                        </v-col>
+                    </v-row>
+                    <v-row>
                         <v-col>
                             <v-data-table 
                                 dense
@@ -221,7 +226,8 @@ export default {
             create: false,
             edit:false,
             view:false
-        }
+        },
+        total_amount:0
         };
     },
 
@@ -235,6 +241,10 @@ export default {
     methods: {
         selectItem(item){
             this.selected_item = item
+            this.total_amount = 0
+            this.selected_item.purchases.forEach(e=>{
+                this.total_amount += Number (e.total_amount)
+            })
         },
         closeDialog(){
             this.addDialog = false

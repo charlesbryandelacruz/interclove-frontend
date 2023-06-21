@@ -355,6 +355,7 @@ export default {
             await axios.post(`${process.env.VUE_APP_HOST_API}/api/save-invoice`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.print_invoice = true
+                this.resetFields()
                 this.closeDialog()
             })
             
@@ -397,7 +398,10 @@ export default {
         },
         resetPrint(){
             this.print_invoice = false
-        }
+        },
+        resetFields(){
+            Object.assign(this.$data, this.$options.data.call(this));
+        },
     },
     props:['dialog'],
     components:{

@@ -14,7 +14,7 @@
                     <v-divider></v-divider>
                     <v-card-text >
                         <v-row>
-                            <v-col cols="4">
+                            <v-col cols="3">
                                 <v-text-field 
                                     readonly 
                                     v-model="selected_item.current_stock" 
@@ -25,7 +25,7 @@
                                     reverse> 
                                 </v-text-field>
                             </v-col>
-                            <v-col cols="4">
+                            <v-col cols="3">
                                 <v-text-field 
                                     reverse
                                     v-model="new_stock" 
@@ -33,6 +33,16 @@
                                     outlined 
                                     hide-details 
                                     label="Adjust Stock"> 
+                                </v-text-field>
+                            </v-col>
+                            <v-col>
+                                <v-text-field 
+                                    v-model="remarks" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Remarks"
+                                    reverse> 
                                 </v-text-field>
                             </v-col>
                             <v-col>
@@ -101,13 +111,15 @@ export default {
                 description:'',
                 id:'',
                 item_prices:[],
-                current_stock:0
+                current_stock:0,
+                remarks:''
             },
             headers:[
                 { text: 'Date', value: 'created_at',class:'grey lighten-2' },
                 { text: 'Prev. Qty #', value: 'from_quantity',class:'grey lighten-2' },
                 { text: 'Method', value: 'method',class:'grey lighten-2' },
                 { text: 'Quantity', value: 'quantity',class:'grey lighten-2' },
+                { text: 'Remarks', value: 'remarks',class:'grey lighten-2' },
             ],
             isDisabled:true,
             new_stock:0,
@@ -115,7 +127,8 @@ export default {
                 add_stocks:false,
                 subtract_stocks:false,
                 view:false
-            }
+            },
+            remarks:''
         };
     },
 
@@ -150,7 +163,8 @@ export default {
                     let payload = {
                         new_stock:this.new_stock,
                         method:method,
-                        id:this.selected_item.id
+                        id:this.selected_item.id,
+                        remarks:this.remarks
                     }
                     axios.post(`${process.env.VUE_APP_HOST_API}/api/update-stock`,payload).then(response=>{
                         Swal.fire(response.data,'','success')

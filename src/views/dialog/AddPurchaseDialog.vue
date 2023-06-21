@@ -344,6 +344,7 @@ export default {
             await axios.post(`${process.env.VUE_APP_HOST_API}/api/save-purchase`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
                 this.print_purchase = true
+                this.resetFields()
                 this.closeDialog()
             })
             
@@ -386,6 +387,9 @@ export default {
         },
         resetPrint(){
             this.print_purchase = false
+        },
+        resetFields(){
+            Object.assign(this.$data, this.$options.data.call(this));
         }
     },
     props:['dialog'],
