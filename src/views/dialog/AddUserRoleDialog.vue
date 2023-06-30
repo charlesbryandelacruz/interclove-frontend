@@ -110,7 +110,7 @@ export default {
             axios.post(`${process.env.VUE_APP_HOST_API}/api/save-access`,payload).then(response=>{
                 Swal.fire(response.data,'','success')
                 this.$emit('refreshData')
-                this.$emit('closeDialog')
+                this.$emit('closeRoleDialog',false)
                 this.resetFields()
             })
         },

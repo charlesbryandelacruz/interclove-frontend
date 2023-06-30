@@ -97,7 +97,7 @@
                             </v-col>
                             <v-col cols="2">
                                 <v-text-field
-                                v-model="selected_item.dr_price" 
+                                v-model="selected_item.total_cost" 
                                 outlined
                                 dense
                                 hide-details
@@ -137,7 +137,8 @@ export default {
                 description:'',
                 id:'',
                 item_prices:[],
-                current_stock:0
+                current_stock:0,
+                total_cost:0
             },
             isDisabled:true,
             unit_of_measures:[
@@ -169,7 +170,7 @@ export default {
     methods: {
         selectItem(item){
             this.selected_item = item
-            this.selected_item.item_prices.total_cost = this.thousandSeprator(this.selected_item.item_prices.total_cost)
+            this.selected_item.total_cost = this.thousandSeprator(this.selected_item.total_cost)
         },
         closeDialog(){
             this.addDialog = false

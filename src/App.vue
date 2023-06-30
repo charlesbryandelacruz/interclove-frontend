@@ -46,7 +46,6 @@
       permanent
       app
       ripple
-      expand-on-hover
     >
         <v-divider></v-divider>
         <v-list-item>
@@ -140,7 +139,7 @@ export default {
             { title: 'List of Products',link:'/products' },
             { title: 'Price List',link:'/price-list' },
             { title: 'Invetory Adjustment',link:'/inventory-adjustment' },
-            { title: 'Inventory Tracking',link:'/' }
+            // { title: 'Inventory Tracking',link:'/' }
           ],
           title: 'Inventory',
         },
@@ -150,7 +149,7 @@ export default {
             { title: 'List of Customers',link:'/customers' },
             { title: 'List of Suppliers',link:'/suppliers' },
             { title: 'List of Agents/Salesman',link:'/salesmans' },
-            { title: 'List of Employees',link:'/' },
+            // { title: 'List of Employees',link:'/' },
           ],
           title: 'Partners',
         },

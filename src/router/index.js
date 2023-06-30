@@ -27,6 +27,7 @@ import PurchaseReportComponent from '../views/modules/reports/PurchaseReportComp
 import PaymentReportComponent from '../views/modules/reports/PaymentReportComponent.vue'
 import ExpenseReportComponent from '../views/modules/reports/ExpenseReportComponent.vue'
 import InventoryReportComponent from '../views/modules/reports/InventoryReportComponent.vue'
+import FinancialReportComponent from '../views/modules/reports/FinancialReportComponent.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -46,6 +47,12 @@ const routes = [
   },
   {
     path: '/login',
+    name: 'login',
+
+    component: Login
+  },
+  {
+    path: '/',
     name: 'login',
 
     component: Login
@@ -383,6 +390,19 @@ const routes = [
       }
   },
     component: InventoryReportComponent,
+  },
+  {
+    path: '/financial-report',
+    name: 'financial-report',
+    beforeEnter: (to, from, next) => {
+      if(!!localStorage.getItem('user_info')){
+        next();
+      }
+      else{
+        return next({ name: "login" });
+      }
+  },
+    component: FinancialReportComponent,
   },
 ]
 const router = new VueRouter({routes, mode: 'history'});

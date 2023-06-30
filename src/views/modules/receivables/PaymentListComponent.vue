@@ -23,7 +23,24 @@
                 </v-card-title>
                 <v-divider></v-divider>
                     <v-card-text>
+                        
                         <v-row>
+                            <v-col cols="2">
+                                <v-autocomplete 
+                                    v-model="filter_data" 
+                                    dense 
+                                    outlined 
+                                    hide-details 
+                                    label="Filter" 
+                                    :items="filter_selection" 
+                                    > 
+                                </v-autocomplete>
+                            </v-col>
+                            <v-col cols="2">
+                                <v-btn color="primary" @click="getAll()">
+                                    Filter
+                                </v-btn>
+                            </v-col>
                             <v-col cols="12">
                                 <v-data-table
                                 :headers="headers"
@@ -118,7 +135,14 @@ export default {
                 view:false,
                 cancel:false,
                 approve:false
-            }
+            },
+            filter_data:null,
+            filter_selection:[
+                {text:'All', value:null},
+                {text:'With Pending Approval',value:1},
+                {text:'With Balance',value:2},
+                {text:'Paid',value:3}
+            ]
         };
     },
 
@@ -129,7 +153,8 @@ export default {
     methods: {
         getAll(){
             let payload = {
-                is_purchase_order:0
+                is_purchase_order:0,
+                filter_data:this.filter_data
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-purchases`,payload).then(response=>{
                 this.items = response.data
