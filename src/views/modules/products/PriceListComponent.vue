@@ -217,7 +217,7 @@ export default {
                     Object.assign(e,{selected:false})
                 })
                 for (const prop in this.items[0].price_b){
-                    console.log(prop)
+                    //console.log(prop)
                     this.pricingTable.headers.push(
                         { text: prop, value: prop, align:'right',class:'grey lighten-2'},
                     )
@@ -259,7 +259,7 @@ export default {
                         [response.data[property]['code']]:isActive
                     })
                 }
-                console.log(this.userAccess)
+                //console.log(this.userAccess)
             })
         },
         

@@ -37,7 +37,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 export default {
-    name: 'IntercloveFrontPrintInvoiceComponent',
     props:['invoice','print_financial','totalAmount'],
     data() {
         return {

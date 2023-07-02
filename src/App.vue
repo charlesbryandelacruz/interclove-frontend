@@ -203,7 +203,7 @@ export default {
             { title: 'List of Products',link:'/products' },
             { title: 'Price List',link:'/price-list' },
             { title: 'Invetory Adjustment',link:'/inventory-adjustment' },
-            { title: 'Inventory Tracking',link:'/' }
+            // { title: 'Inventory Tracking',link:'/' }
           ],
           title: 'Inventory',
         },
@@ -216,7 +216,7 @@ export default {
             { title: 'Payment Report',link:'/payment-report' },
             { title: 'Expense Report',link:'/expense-report' },
             { title: 'Inventory Report',link:'/inventory-report' },
-            { title: 'Financial Report',link:'/financial-report' },
+            // { title: 'Financial Report',link:'/financial-report' },
           ],
           title: 'Reports',
         },

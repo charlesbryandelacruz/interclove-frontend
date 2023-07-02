@@ -390,6 +390,10 @@ export default {
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
+            this.getAllSalesman()
+            this.getPurchaseNum()
+            this.getAllSuppliers()
+            this.getAllItems()
         }
     },
     props:['dialog'],

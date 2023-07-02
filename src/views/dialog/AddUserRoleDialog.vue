@@ -81,7 +81,7 @@ export default {
     watch:{
         addRoleDialog:{
             handler(val){
-                console.log(this.selected_item)
+                //console.log(this.selected_item)
                 this.showDialog = val
                 this.user_id = this.selected_item.id
                 let payload = {
@@ -119,6 +119,7 @@ export default {
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
+            this.getAllDepartments()
         }
     },
 };

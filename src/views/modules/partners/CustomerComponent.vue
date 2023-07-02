@@ -328,7 +328,7 @@ export default {
                         [response.data[property]['code']]:isActive
                     })
                 }
-                console.log(this.userAccess)
+                //console.log(this.userAccess)
             })
         }
     },

@@ -54,6 +54,10 @@ export default {
                password:this.password         
          }
          await axios.post(`${process.env.VUE_APP_HOST_API}/login`,payload).then(response=>{
+            if(response.data != 'Login Successfully'){
+               Swal.fire('Wrong Credentials','','error')
+               return false
+            }
                Swal.fire(response.data,'','success')
 
               axios.post(`${process.env.VUE_APP_HOST_API}/api/get-user-info`,payload).then(resp=>{

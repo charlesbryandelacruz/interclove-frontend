@@ -347,6 +347,8 @@ export default {
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
+            this.getAllCollectionTypes();
+            this.getAllBanks();
         },
         getUploadedData(file) {
             this.fileSelected = true;
@@ -372,7 +374,7 @@ export default {
         },
         selected_item:{
             handler(val){
-                console.log(val)
+                //console.log(val)
             }
         },
         allocatedRemainingCollection:{

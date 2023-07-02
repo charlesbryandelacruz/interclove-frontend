@@ -193,6 +193,7 @@ methods: {
     },
     resetFields(){
         Object.assign(this.$data, this.$options.data.call(this));
+        this.getAllExpensesType();
     },
     getAllExpensesType(){
         axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-expense-types`).then(response=>{

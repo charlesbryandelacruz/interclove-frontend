@@ -212,7 +212,7 @@
                     <tbody>
                         <tr>
                             <td>Net Sales</td> 
-                            <td>PHP {{thousandSeprator(items.net_income) }}</td> 
+                            <td>PHP {{thousandSeprator(items.total_net_sales) }}</td> 
                         </tr>
                         <tr>
                             <td>Cost of Sales</td> 
@@ -223,6 +223,7 @@
                             <td>PHP {{thousandSeprator(items.gross_profit) }}</td> 
                             <!-- <td>{{items.gross_profit | currency('₱ ',2) }}</td>  -->
                         </tr>
+                        <tr><td></td><td></td></tr>
                         <tr>
                             <td>Admin Expenses</td> 
                             <td>PHP {{thousandSeprator(items.admin_expenses) }}</td> 
@@ -243,8 +244,9 @@
                             <td>PHP {{thousandSeprator(items.loss_income) }}</td> 
                             <!-- <td>{{items.loss_income | currency('₱ ',2) }}</td>  -->
                         </tr>
+                        <tr><td></td><td></td></tr>
                         <tr>
-                            <td>Income Before tab</td> 
+                            <td>Income Before tax</td> 
                             <td>PHP {{thousandSeprator(items.income_before_tax) }}</td> 
                             <!-- <td>{{items.income_before_tax | currency('₱ ',2) }}</td>  -->
                         </tr>
@@ -253,6 +255,7 @@
                             <td>PHP {{thousandSeprator(items.income_tax_expense) }}</td>  
                             <!-- <td>{{items.income_tax_expense | currency('₱ ',2) }}</td>  -->
                         </tr>
+                        <tr><td></td><td></td></tr>
                         <tr>
                             <td>Net Income</td> 
                             <td>PHP {{thousandSeprator(items.net_income) }}</td>  

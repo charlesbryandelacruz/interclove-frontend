@@ -354,8 +354,10 @@ export default {
             }
             await axios.post(`${process.env.VUE_APP_HOST_API}/api/save-invoice`,payload).then(response=>{
                 Swal.fire(response.data,'','success');
-                this.print_invoice = true
-                this.resetFields()
+                if(!is_quotation) this.print_invoice = true
+                else{
+                    this.resetFields();
+                }
                 this.closeDialog()
             })
             
@@ -398,9 +400,14 @@ export default {
         },
         resetPrint(){
             this.print_invoice = false
+            this.resetFields()
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
+            this.getAllSalesman()
+            this.getInvoiceNum()
+            this.getAllCustomers()
+            this.getAllItems()
         },
     },
     props:['dialog'],

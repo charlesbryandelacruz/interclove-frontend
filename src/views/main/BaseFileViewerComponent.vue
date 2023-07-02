@@ -59,7 +59,7 @@ export default {
             showFileViewer:false,
             filesHeader: [
                 { text: 'Name', value: 'name' },
-                { text: 'Uploaded By', value: 'uploaded_by_name' },
+                // { text: 'Uploaded By', value: 'uploaded_by_name' },
                 { text: 'Date', value: 'created_at' },
                 { text: 'Action', value: 'action' },
             ],

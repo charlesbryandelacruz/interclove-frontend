@@ -121,6 +121,7 @@ export default {
         },
         resetFields(){
             Object.assign(this.$data, this.$options.data.call(this));
+            this.getAllDepartments()
         }
     },
 };

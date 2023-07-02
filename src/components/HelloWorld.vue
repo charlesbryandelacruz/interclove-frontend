@@ -1,9 +1,9 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
+  <v-container class="d-flex justify-content-center align-items-center">
+    <v-row class="text-center align-items-center">
       <v-col cols="12">
         <v-img
-          :src="require('../assets/logo.svg')"
+          src="interclove_logo.png"
           class="my-3"
           contain
           height="200"
@@ -12,20 +12,21 @@
 
       <v-col class="mb-4">
         <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
+          Welcome to Interclove POS
         </h1>
 
         <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
+          Interclove Co. has been in the industry of providing high quality polycarbonate shutters and roll up motor products and accessories
+          <br>that are mostly used in shopping malls, retail stores, and commercial banks since 2017
+          <br>
           <a
-            href="https://community.vuetifyjs.com"
+            href="https://interclove.com/"
             target="_blank"
-          >Discord Community</a>
+          >Interclove Official Website</a>
         </p>
       </v-col>
 
-      <v-col
+      <!-- <v-col
         class="mb-5"
         cols="12"
       >
@@ -86,7 +87,7 @@
             {{ eco.text }}
           </a>
         </v-row>
-      </v-col>
+      </v-col> -->
     </v-row>
   </v-container>
 </template>

@@ -108,7 +108,7 @@
                                 row="3"
                                 outlined
                                 label="Remarks"
-                                v-model="selected_item.drs"
+                                v-model="selected_item.remarks"
                                 >
                                 </v-textarea>
                             </v-col>
@@ -254,7 +254,7 @@ export default {
                 terms:'',
                 salesman_id:0,
                 sales_account_id:0,
-                drs:'',
+                remarks:'',
                 invoice_items:[
                     {
                         item_id:0,
@@ -398,7 +398,7 @@ export default {
                         [response.data[property]['code']]:isActive
                     })
                 }
-                console.log(this.userAccess)
+                //console.log(this.userAccess)
             })
         }
     },
