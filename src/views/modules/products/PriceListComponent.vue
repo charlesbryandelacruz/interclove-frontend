@@ -11,6 +11,14 @@
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
+                                    small
+                                    class="mr-2" 
+                                    color="red" 
+                                    @click="showRemoveEditDialog();"
+                                    >
+                                    Remove Discount
+                                </v-btn>
+                                <v-btn 
                                     v-if="userAccess.edit"
                                     small
                                     class="mr-2" 
@@ -123,6 +131,7 @@
             </v-dialog>
         </v-row>
         <AddPriceBracketDialogVue :addDialog="addDialog" @closeDialog="closeDialog()" @refreshData="getAll()"></AddPriceBracketDialogVue>
+        <RemovePriceBracketDialogVue :removeDialog="removeDialog" @closeRemoveDialog="closeRemoveDialog()" @refreshData="getAll()"></RemovePriceBracketDialogVue>
     </v-app>
   
 </template>
@@ -130,6 +139,7 @@
 <script>
 import Swal from 'sweetalert2';
 import AddPriceBracketDialogVue from '../../dialog/AddPriceBracketDialog.vue';
+import RemovePriceBracketDialogVue from '../../dialog/RemovePriceBracketDialog.vue';
 import ListComponentVue from '@/views/main/ListComponent.vue';
 import axios from 'axios';
 export default {
@@ -168,7 +178,8 @@ export default {
                 create:false,
                 edit:false,
                 view:false
-            }
+            },
+            removeDialog:false
         };
     },
 
@@ -189,6 +200,12 @@ export default {
         },
         showAddEditDialog(){
             this.addDialog = true
+        },
+        closeRemoveDialog(){
+            this.removeDialog = false
+        },
+        showRemoveEditDialog(){
+            this.removeDialog = true
         },
         cancelItem(){
             Swal.fire({
@@ -211,6 +228,13 @@ export default {
         },
         getAll(){
             this.items = [];
+            this.pricingTable.headers = [
+                { text: '', value: '',class:'grey lighten-2'},
+                { text: 'Name', value: 'name',class:'grey lighten-2' },
+                { text: 'Current Stocks', value: 'current_stock',class:'grey lighten-2' },
+                { text: 'Purchase Price', value: 'total_cost',align:'right',class:'grey lighten-2' },
+                { text: 'DR Price', value: 'dr_price',align:'right',class:'grey lighten-2' },
+            ]
             axios.post(`${process.env.VUE_APP_HOST_API}/api/get-all-item`).then(response=>{
                 this.items = response.data
                 this.items.forEach(e=>{
@@ -266,7 +290,8 @@ export default {
     },
     components:{
         AddPriceBracketDialogVue,
-        ListComponentVue
+        ListComponentVue,
+        RemovePriceBracketDialogVue
     },
     computed:{
     },

@@ -11,6 +11,15 @@
                             <v-spacer></v-spacer>
                             <v-col class="text-right">
                                 <v-btn 
+                                    v-if="!selected_item.has_transactions"
+                                    small
+                                    class="mr-2" 
+                                    color="red text--white"
+                                    @click="deleteItem()"
+                                >
+                                    Delete Item
+                                </v-btn>
+                                <v-btn 
                                     v-if="!isDisabled"
                                     small
                                     class="mr-2" 
@@ -138,7 +147,8 @@ export default {
                 id:'',
                 item_prices:[],
                 current_stock:0,
-                total_cost:0
+                total_cost:0,
+                has_transactions:true
             },
             isDisabled:true,
             unit_of_measures:[
@@ -212,6 +222,28 @@ export default {
                     this.getAll();
                 })
             }
+        },
+        deleteItem(){
+            Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure you want to remove item?.',
+            text: '',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            showCancelButton: true,
+            reverseButtons:true
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    let payload = {
+                    id:this.selected_item.id
+                }
+                axios.post(`${process.env.VUE_APP_HOST_API}/api/delete-item`,payload).then(response=>{
+                    Swal.fire(response.data,'','success')
+                    this.getAll();
+                })
+                }
+            })
         },
         checkAccess(){
             let payload = {
