@@ -1,6 +1,5 @@
 <template>
-    <div> 
-        <v-dialog v-model="showDialog" persistent height="500px" max-width="50%" scrollable>
+        <v-dialog v-model="showDialog" persistent max-width="50%">
             <v-card>
                 <v-card-title>
                     <v-row>
@@ -12,7 +11,7 @@
                         </v-col>
                     </v-row>
                 </v-card-title>   
-                <v-divider horizontal></v-divider>
+                <v-divider></v-divider>
                 <v-card-text>
                     <v-row class="mt-2">
                         <v-col cols="4">
@@ -28,19 +27,18 @@
                             <v-textarea v-model="items.description" dense outlined hide-details label="Description"> </v-textarea>
                         </v-col>
                     </v-row>
-                </v-card-text>   
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-row> 
+                    <v-divider class="mt-2"></v-divider>              
+                    <v-row class="mt-2"> 
                         <v-col class="text-right">
-                            <v-btn small color="secondary" class="mr-2">Cancel</v-btn>
+                            <v-btn small color="secondary" @click="$emit('closeDialog',false)" class="mr-2">Cancel</v-btn>
                             <v-btn small color="primary" @click="saveItem()">Submit</v-btn>
                         </v-col>
                     </v-row>
-                </v-card-actions>  
+                </v-card-text>   
+               
+          
             </v-card>
         </v-dialog>
-    </div>
 </template>
 
 <script>
@@ -86,7 +84,8 @@ export default {
             }
             axios.post(`${process.env.VUE_APP_HOST_API}/api/save-item`,payload).then(response=>{
                 Swal.fire(response.data,'','success')
-                $emit('refreshData')
+                this.$emit('refreshData')
+                this.$emit('closeDialog')
             })
         }
     },
