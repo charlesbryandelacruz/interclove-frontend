@@ -8,6 +8,8 @@
       :mini-variant.sync="mini"
       permanent
       app
+      expand-on-hover
+      
     >
         <v-divider></v-divider>
         <v-list-item class="">
@@ -69,7 +71,7 @@ export default {
         {
           action: 'mdi-cash-register',
           items: [
-            { title: 'List of Invoices',link:'/products' },
+            { title: 'List of Invoices',link:'/invoices' },
             { title: 'List of Collection',link:'/products' },
           ],
           title: 'Receivables',
